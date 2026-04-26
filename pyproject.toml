@@ -21,6 +21,6 @@ exclude = ["data/", "notebooks/", "chroma_db/"]
 testpaths = ["tests"]
 addopts = "-v --tb=short --strict-markers"
 markers = [
-    "integration: tests that hit external services (SEC EDGAR, OpenAI, Groq)",
+    "integration: tests that hit external services (SEC EDGAR, Groq) or load the local embedding model",
     "slow: tests that take more than a few seconds",
 ]

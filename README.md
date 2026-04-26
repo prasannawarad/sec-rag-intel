@@ -28,7 +28,8 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
                           RecursiveCharacterTextSplitter
                               (512 tok, 50 overlap)
                                         │
-                       OpenAI text-embedding-3-small
+                  Local BAAI/bge-small-en-v1.5
+                  (sentence-transformers, no API key)
                                         │
                   ChromaDB (local) ◄──► Pinecone (prod)
                                         │
@@ -50,7 +51,7 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
 | Data | SEC EDGAR (free) via `sec-edgar-downloader` |
 | Parsing | BeautifulSoup (lxml) |
 | Chunking | LangChain `RecursiveCharacterTextSplitter` |
-| Embeddings | OpenAI `text-embedding-3-small` |
+| Embeddings | Local `BAAI/bge-small-en-v1.5` (sentence-transformers, zero API cost) |
 | Vector store | ChromaDB (local) / Pinecone (prod) — toggled via `VECTOR_STORE_MODE` |
 | Retrieval | MMR with metadata filters |
 | LLM | Groq `llama-3.3-70b-versatile` |
@@ -67,7 +68,7 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
 git clone <repo> sec-rag-intel && cd sec-rag-intel
 python -m venv .venv && source .venv/bin/activate
 make dev-install
-cp .env.example .env             # then fill in OPENAI_API_KEY + GROQ_API_KEY
+cp .env.example .env             # then fill in GROQ_API_KEY (only key required for local dev)
 
 # 2. Build the index (downloads filings → parses → embeds)
 make index
@@ -114,6 +115,8 @@ tests/              pytest unit + integration
 - **RAGAS over manual eval** — reproducible, quantitative; faithfulness catches hallucinations critical for financial data.
 - **Source attribution** — SEC filings are legal documents, analysts must verify. This is a compliance argument, not a UX one.
 - **Groq over OpenAI for inference** — competitive quality at much lower latency/cost.
+- **Local BGE embeddings instead of an OpenAI/Cohere API** — zero recurring cost, identical vectors across runs (reproducibility), and the whole pipeline depends on a single paid API (Groq). Tradeoff: ~3-5% lower MTEB scores than `text-embedding-3-small` — acceptable for plain-English SEC prose.
+- **Groq Llama 3.3 70B as RAGAS judge** — keeps the project on a single LLM provider, but introduces a mild self-evaluation bias since the same model family generates *and* judges. Mitigation: faithfulness scores are spot-checked manually on a 5-question random sample.
 
 ## Deployment
 Deployed on HuggingFace Spaces (Streamlit SDK). _Live link TBD._

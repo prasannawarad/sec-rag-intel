@@ -1,4 +1,8 @@
-"""Vector store factory: switches between local Chroma and prod Pinecone."""
+"""Vector store factory: switches between local Chroma and prod Pinecone.
+
+Embeddings are local (BAAI/bge-small-en-v1.5 via sentence-transformers) — no
+API key required. The same model runs in dev and on HF Spaces.
+"""
 
 from __future__ import annotations
 
@@ -6,8 +10,9 @@ import logging
 from collections.abc import Iterable
 
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import VectorStore
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from src.config import get_settings
 from src.ingest.chunker import Chunk
@@ -15,9 +20,14 @@ from src.ingest.chunker import Chunk
 logger = logging.getLogger(__name__)
 
 
-def get_embeddings() -> OpenAIEmbeddings:
+def get_embeddings() -> Embeddings:
+    """Local sentence-transformers model. First call downloads ~130MB to ~/.cache."""
     settings = get_settings()
-    return OpenAIEmbeddings(model=settings.embedding_model, api_key=settings.openai_api_key)
+    return HuggingFaceEmbeddings(
+        model_name=settings.embedding_model_name,
+        model_kwargs={"device": settings.embedding_device},
+        encode_kwargs={"normalize_embeddings": True},
+    )
 
 
 def get_vectorstore() -> VectorStore:

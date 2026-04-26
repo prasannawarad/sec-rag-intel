@@ -1,4 +1,10 @@
-"""RAGAS evaluation runner. Outputs scores to eval_results/scores.json."""
+"""RAGAS evaluation runner. Outputs scores to eval_results/scores.json.
+
+Uses Groq Llama 3.3 70B as the LLM judge (instead of OpenAI default) and the
+same local BGE embeddings as the retrieval pipeline. The LLM-as-judge being
+the same family as the LLM-as-generator introduces a mild self-evaluation
+bias — flag this in the README and spot-check faithfulness manually.
+"""
 
 from __future__ import annotations
 
@@ -7,7 +13,7 @@ import logging
 from pathlib import Path
 
 from src.chain.rag_chain import build_rag_chain
-from src.config import EVAL_DIR
+from src.config import EVAL_DIR, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +48,27 @@ def run_predictions(questions: list[dict]) -> list[dict]:
     return results
 
 
+def _build_judge():
+    """Wrap Groq + local BGE for RAGAS."""
+    from langchain_groq import ChatGroq
+    from langchain_huggingface import HuggingFaceEmbeddings
+    from ragas.embeddings import LangchainEmbeddingsWrapper
+    from ragas.llms import LangchainLLMWrapper
+
+    settings = get_settings()
+    judge_llm = LangchainLLMWrapper(
+        ChatGroq(model=settings.llm_model, api_key=settings.groq_api_key, temperature=0)
+    )
+    judge_emb = LangchainEmbeddingsWrapper(
+        HuggingFaceEmbeddings(
+            model_name=settings.embedding_model_name,
+            model_kwargs={"device": settings.embedding_device},
+            encode_kwargs={"normalize_embeddings": True},
+        )
+    )
+    return judge_llm, judge_emb
+
+
 def evaluate() -> dict:
     """Run RAGAS metrics: faithfulness, answer_relevancy, context_recall."""
     from datasets import Dataset
@@ -52,7 +79,13 @@ def evaluate() -> dict:
     preds = run_predictions(questions)
 
     ds = Dataset.from_list(preds)
-    result = ragas_evaluate(ds, metrics=[faithfulness, answer_relevancy, context_recall])
+    judge_llm, judge_emb = _build_judge()
+    result = ragas_evaluate(
+        ds,
+        metrics=[faithfulness, answer_relevancy, context_recall],
+        llm=judge_llm,
+        embeddings=judge_emb,
+    )
 
     EVAL_DIR.mkdir(parents=True, exist_ok=True)
     scores = {k: float(v) for k, v in result.items()} if hasattr(result, "items") else dict(result)

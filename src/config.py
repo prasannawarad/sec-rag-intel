@@ -23,21 +23,24 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    openai_api_key: str = ""
+    # LLM
     groq_api_key: str = ""
-
-    vector_store_mode: Literal["local", "pinecone"] = "local"
-    chroma_persist_dir: str = str(ROOT_DIR / "chroma_db")
-
-    pinecone_api_key: str = ""
-    pinecone_environment: str = "us-east-1-aws"
-    pinecone_index_name: str = "sec-rag-intel"
-
-    sec_user_agent: str = "sec-rag-intel example@example.com"
-
-    embedding_model: str = "text-embedding-3-small"
     llm_model: str = "llama-3.3-70b-versatile"
 
+    # Vector store
+    vector_store_mode: Literal["local", "pinecone"] = "local"
+    chroma_persist_dir: str = str(ROOT_DIR / "chroma_db")
+    pinecone_api_key: str = ""
+    pinecone_index_name: str = "sec-rag-intel"
+
+    # Embeddings (local sentence-transformers, no API key)
+    embedding_model_name: str = "BAAI/bge-small-en-v1.5"
+    embedding_device: str = "cpu"  # "mps" on Apple Silicon for ~2-3x speedup
+
+    # SEC EDGAR
+    sec_user_agent: str = "sec-rag-intel example@example.com"
+
+    # Chunking + retrieval
     chunk_size: int = 512
     chunk_overlap: int = 50
     retriever_k: int = 5
