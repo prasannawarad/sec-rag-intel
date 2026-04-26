@@ -134,7 +134,9 @@ def chunks_path(ticker: str, fiscal_year: int, accession_number: str) -> Path:
 
 
 def parse_and_persist(raw_path: Path, ticker: str) -> tuple[Path, int]:
-    """Read filing -> sections -> chunks -> write Parquet. Returns (path, n)."""
+    """Read filing -> sections -> chunks -> quality check -> write Parquet."""
+    from src.ingest.quality import assert_filing_quality
+
     header = parse_header(raw_path)
     sections = parse_filing(raw_path, form_type=header.form_type)
     df = chunk_sections(
@@ -144,6 +146,7 @@ def parse_and_persist(raw_path: Path, ticker: str) -> tuple[Path, int]:
         fiscal_year=header.fiscal_year,
         filing_type=header.form_type,
     )
+    assert_filing_quality(df, header.accession_number)
     out = chunks_path(ticker, header.fiscal_year, header.accession_number)
     df.write_parquet(out)
     logger.info(
