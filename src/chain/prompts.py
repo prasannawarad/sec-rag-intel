@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 SYSTEM_PROMPT = """You are a financial analyst assistant answering questions about SEC filings.
 
@@ -12,6 +12,8 @@ Strict rules:
 2. Always cite the filing using the format: [TICKER YEAR FILING_TYPE - SECTION].
 3. Quote exact dollar amounts, percentages, and dates verbatim.
 4. Do not speculate, infer trends, or use outside knowledge.
+5. If the user refers to a previous question ("what about...", "and their...", "compare that with"),
+   use the conversation history to resolve the reference before answering.
 """
 
 USER_TEMPLATE = """Context from SEC filings:
@@ -28,6 +30,7 @@ def build_prompt() -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages(
         [
             ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder(variable_name="chat_history", optional=True),
             ("human", USER_TEMPLATE),
         ]
     )
