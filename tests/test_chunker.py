@@ -43,6 +43,10 @@ def test_chunk_sections_attaches_section_metadata_and_hashes():
 
 def test_chunk_sections_content_hash_is_deterministic():
     sec = [Section(item_code="Item 1A", section_label="Risk Factors", text="same text " * 200)]
-    df1 = chunk_sections(sec, accession_number="X", ticker="T", fiscal_year=2025, filing_type="10-K")
-    df2 = chunk_sections(sec, accession_number="X", ticker="T", fiscal_year=2025, filing_type="10-K")
+    df1 = chunk_sections(
+        sec, accession_number="X", ticker="T", fiscal_year=2025, filing_type="10-K"
+    )
+    df2 = chunk_sections(
+        sec, accession_number="X", ticker="T", fiscal_year=2025, filing_type="10-K"
+    )
     assert df1["content_hash"].to_list() == df2["content_hash"].to_list()

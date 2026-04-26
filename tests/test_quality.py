@@ -1,12 +1,12 @@
 import polars as pl
 import pytest
 
-from src.ingest.quality import DataQualityError, assert_filing_quality
 from src.ingest.chunker import CHUNK_SCHEMA
+from src.ingest.quality import DataQualityError, assert_filing_quality
 
 
 def _make_df(n_sections: int = 5, chars_per_chunk: int = 400, n_chunks: int = 100) -> pl.DataFrame:
-    items = [f"Item {i+1}" for i in range(n_sections)]
+    items = [f"Item {i + 1}" for i in range(n_sections)]
     rows = [
         {
             "chunk_id": f"ACC::Item{i % n_sections}::{i:04d}",

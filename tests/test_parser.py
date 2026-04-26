@@ -30,9 +30,15 @@ def test_split_by_items_picks_real_section_over_toc_stub():
     on their own lines — the longer body must win."""
     text = (
         "Item 1.\nItem 1A.\nItem 1B.\nItem 2.\n"  # TOC block
-        + "Item 1. Business\n" + ("Apple makes phones. " * 60) + "\n"
-        + "Item 1A. Risk Factors\n" + ("Supply chain concentration risk. " * 200) + "\n"
-        + "Item 1B. Unresolved Staff Comments\n" + ("None. " * 100) + "\n"
+        + "Item 1. Business\n"
+        + ("Apple makes phones. " * 60)
+        + "\n"
+        + "Item 1A. Risk Factors\n"
+        + ("Supply chain concentration risk. " * 200)
+        + "\n"
+        + "Item 1B. Unresolved Staff Comments\n"
+        + ("None. " * 100)
+        + "\n"
     )
     sections = _split_by_items(text)
     by_code = {s.item_code: s for s in sections}
@@ -59,8 +65,12 @@ def test_split_by_items_ignores_in_prose_mentions():
 
 def test_split_by_items_skips_unknown_item_codes():
     text = (
-        "Item 99. Something Made Up\n" + ("filler " * 200) + "\n"
-        + "Item 1A. Risk Factors\n" + ("real risk content. " * 200) + "\n"
+        "Item 99. Something Made Up\n"
+        + ("filler " * 200)
+        + "\n"
+        + "Item 1A. Risk Factors\n"
+        + ("real risk content. " * 200)
+        + "\n"
     )
     sections = _split_by_items(text)
     codes = [s.item_code for s in sections]

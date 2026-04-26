@@ -13,10 +13,10 @@ import polars as pl
 
 logger = logging.getLogger(__name__)
 
-MIN_SECTIONS = 3          # a 10-K with <3 detected sections is almost certainly mis-parsed
+MIN_SECTIONS = 3  # a 10-K with <3 detected sections is almost certainly mis-parsed
 MIN_TOTAL_CHARS = 30_000  # a full 10-K is >200k chars after cleaning; 30k catches empty parses
-MIN_CHUNK_SIZE = 50       # chunks shorter than this are noise
-MAX_CHUNK_MULTIPLE = 5    # no chunk should be >5x the configured chunk_size
+MIN_CHUNK_SIZE = 50  # chunks shorter than this are noise
+MAX_CHUNK_MULTIPLE = 5  # no chunk should be >5x the configured chunk_size
 
 
 class DataQualityError(ValueError):

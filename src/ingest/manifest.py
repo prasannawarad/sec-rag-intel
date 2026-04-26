@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 import polars as pl
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 MANIFEST_PATH = PROCESSED_DIR / "manifest.parquet"
 
 
-class Stage(str, Enum):
+class Stage(StrEnum):
     DOWNLOAD = "download"
     PARSE = "parse"
     EMBED = "embed"
@@ -93,7 +93,9 @@ class Manifest:
             [self._df.filter(pl.col("accession_number") != header.accession_number), new_row]
         )
         self._save()
-        logger.info("manifest: upserted %s (%s %s)", header.accession_number, ticker, header.form_type)
+        logger.info(
+            "manifest: upserted %s (%s %s)", header.accession_number, ticker, header.form_type
+        )
 
     def mark_parsed(self, accession_number: str, num_chunks: int) -> None:
         """Mark one filing parsed and save immediately (crash-safe checkpoint)."""
@@ -115,7 +117,8 @@ class Manifest:
         self._df = self._df.with_columns(
             num_chunks=pl.when(pl.col("accession_number").is_in(accessions))
             .then(pl.col("accession_number").replace(chunk_map))
-            .otherwise(pl.col("num_chunks")).cast(pl.Int32),
+            .otherwise(pl.col("num_chunks"))
+            .cast(pl.Int32),
             parsed_at=pl.when(pl.col("accession_number").is_in(accessions))
             .then(now)
             .otherwise(pl.col("parsed_at")),

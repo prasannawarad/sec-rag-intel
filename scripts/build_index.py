@@ -19,7 +19,7 @@ from pathlib import Path
 
 import polars as pl
 
-from src.config import RAW_DIR, get_settings
+from src.config import get_settings
 from src.embeddings.vectorstore import index_parquet
 from src.ingest.chunker import chunks_path, parse_and_persist
 from src.ingest.downloader import DEFAULT_TICKERS, download_filings
@@ -56,7 +56,9 @@ def _run_embed_stage(mf: Manifest) -> None:
     for row in pending.iter_rows(named=True):
         path = chunks_path(row["ticker"], row["fiscal_year"], row["accession_number"])
         if not path.exists():
-            logger.warning("Chunk file missing for %s — re-run parse stage.", row["accession_number"])
+            logger.warning(
+                "Chunk file missing for %s — re-run parse stage.", row["accession_number"]
+            )
             continue
         try:
             n_new = index_parquet(pl.read_parquet(path))

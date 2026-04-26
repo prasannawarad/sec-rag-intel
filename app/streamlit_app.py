@@ -28,6 +28,7 @@ def _render_sources(sources: list[dict]) -> None:
                 f" — *{s.get('section_label', '')}*"
             )
 
+
 st.set_page_config(page_title="SEC RAG Intel", page_icon="📊", layout="wide")
 
 if "session_id" not in st.session_state:

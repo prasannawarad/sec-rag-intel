@@ -24,7 +24,7 @@ QUERIES: list[tuple[str, str, str]] = [
     ("AMZN", "10-K", "What does Amazon say about AWS segment revenue?"),
     ("GOOGL", "10-K", "What are Alphabet's risks related to advertising revenue?"),
     ("TSLA", "10-K", "How does Tesla describe its manufacturing capacity risks?"),
-    ("JPM",  "10-K", "What credit risk exposures does JPMorgan highlight?"),
+    ("JPM", "10-K", "What credit risk exposures does JPMorgan highlight?"),
     ("NVDA", "10-K", "What does NVIDIA say about data center demand?"),
     ("META", "10-K", "How does Meta describe Reality Labs operating losses?"),
 ]
@@ -46,8 +46,10 @@ def main() -> None:
             failures.append(f"{ticker}: {len(wrong_ticker)} doc(s) with wrong ticker metadata")
             continue
 
-        print(f"✓ {ticker:<6} {len(docs)} docs | sections: "
-              + ", ".join({d.metadata.get('section_label', '?') for d in docs}))
+        print(
+            f"✓ {ticker:<6} {len(docs)} docs | sections: "
+            + ", ".join({d.metadata.get("section_label", "?") for d in docs})
+        )
 
     if failures:
         print("\nFAILURES:")
