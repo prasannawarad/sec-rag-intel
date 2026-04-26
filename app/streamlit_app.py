@@ -30,15 +30,12 @@ def _render_sources(sources: list[dict]) -> None:
 
 st.set_page_config(page_title="SEC RAG Intel", page_icon="📊", layout="wide")
 
-# ── Session bootstrap ──────────────────────────────────────────────────────────
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
 if "messages" not in st.session_state:
-    # Each entry: {"role": "user"|"assistant", "content": str, "sources": list}
     st.session_state.messages = []
 
-# ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.title("📊 SEC RAG Intel")
     st.caption("Natural-language queries over 10-K / 10-Q filings")
@@ -62,28 +59,23 @@ with st.sidebar:
         "Groq Llama 3.3 70B · LangChain LCEL · RAGAS eval"
     )
 
-# ── Main area ──────────────────────────────────────────────────────────────────
 st.header("SEC Filing Intelligence")
 st.caption(
     "Ask questions about the latest 10-K filings for AAPL, MSFT, AMZN, "
     "GOOGL, TSLA, JPM, NVDA, and META. Answers are grounded and cited."
 )
 
-# Render conversation history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
         if msg["role"] == "assistant" and msg.get("sources"):
             _render_sources(msg["sources"])
 
-# Chat input (pinned to bottom by Streamlit)
 if question := st.chat_input("e.g. What are Apple's main supply chain risks?"):
-    # Show user message immediately
     st.session_state.messages.append({"role": "user", "content": question, "sources": []})
     with st.chat_message("user"):
         st.write(question)
 
-    # Generate answer
     with st.chat_message("assistant"):
         with st.spinner("Searching filings and generating answer…"):
             chain = build_rag_chain(

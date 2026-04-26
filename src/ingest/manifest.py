@@ -13,9 +13,9 @@ Stages set their own timestamp + result columns on success:
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime
+from datetime import datetime
+from enum import Enum
 from pathlib import Path
-from typing import Literal
 
 import polars as pl
 
@@ -26,7 +26,18 @@ logger = logging.getLogger(__name__)
 
 MANIFEST_PATH = PROCESSED_DIR / "manifest.parquet"
 
-Stage = Literal["download", "parse", "embed"]
+
+class Stage(str, Enum):
+    DOWNLOAD = "download"
+    PARSE = "parse"
+    EMBED = "embed"
+
+
+_STAGE_COL: dict[Stage, str] = {
+    Stage.DOWNLOAD: "downloaded_at",
+    Stage.PARSE: "parsed_at",
+    Stage.EMBED: "embedded_at",
+}
 
 _SCHEMA = {
     "accession_number": pl.Utf8,
@@ -50,10 +61,7 @@ class Manifest:
     def __init__(self, path: Path = MANIFEST_PATH) -> None:
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        if self.path.exists():
-            self._df = pl.read_parquet(self.path)
-        else:
-            self._df = pl.DataFrame(schema=_SCHEMA)
+        self._df = pl.read_parquet(path) if path.exists() else pl.DataFrame(schema=_SCHEMA)
 
     def _save(self) -> None:
         self._df.write_parquet(self.path)
@@ -64,7 +72,6 @@ class Manifest:
         return (self._df["accession_number"] == accession_number).any()
 
     def upsert_filing(self, header: FilingHeader, ticker: str, raw_path: Path) -> None:
-        """Insert or replace a row for this filing with download metadata."""
         row = {
             "accession_number": header.accession_number,
             "ticker": ticker,
@@ -83,15 +90,13 @@ class Manifest:
         }
         new_row = pl.DataFrame([row], schema=_SCHEMA)
         self._df = pl.concat(
-            [
-                self._df.filter(pl.col("accession_number") != header.accession_number),
-                new_row,
-            ]
+            [self._df.filter(pl.col("accession_number") != header.accession_number), new_row]
         )
         self._save()
         logger.info("manifest: upserted %s (%s %s)", header.accession_number, ticker, header.form_type)
 
     def mark_parsed(self, accession_number: str, num_chunks: int) -> None:
+        """Mark one filing parsed and save immediately (crash-safe checkpoint)."""
         self._df = self._df.with_columns(
             num_chunks=pl.when(pl.col("accession_number") == accession_number)
             .then(num_chunks)
@@ -102,7 +107,23 @@ class Manifest:
         )
         self._save()
 
+    def mark_parsed_batch(self, updates: list[tuple[str, int]]) -> None:
+        """Mark multiple filings parsed in one Parquet write."""
+        now = datetime.utcnow()
+        chunk_map = dict(updates)
+        accessions = list(chunk_map.keys())
+        self._df = self._df.with_columns(
+            num_chunks=pl.when(pl.col("accession_number").is_in(accessions))
+            .then(pl.col("accession_number").replace(chunk_map))
+            .otherwise(pl.col("num_chunks")).cast(pl.Int32),
+            parsed_at=pl.when(pl.col("accession_number").is_in(accessions))
+            .then(now)
+            .otherwise(pl.col("parsed_at")),
+        )
+        self._save()
+
     def mark_embedded(self, accession_number: str, embed_model: str) -> None:
+        """Mark one filing embedded and save immediately (crash-safe checkpoint)."""
         self._df = self._df.with_columns(
             embed_model=pl.when(pl.col("accession_number") == accession_number)
             .then(pl.lit(embed_model))
@@ -113,10 +134,22 @@ class Manifest:
         )
         self._save()
 
+    def mark_embedded_batch(self, accession_numbers: list[str], embed_model: str) -> None:
+        """Mark multiple filings embedded in one Parquet write."""
+        now = datetime.utcnow()
+        self._df = self._df.with_columns(
+            embed_model=pl.when(pl.col("accession_number").is_in(accession_numbers))
+            .then(pl.lit(embed_model))
+            .otherwise(pl.col("embed_model")),
+            embedded_at=pl.when(pl.col("accession_number").is_in(accession_numbers))
+            .then(now)
+            .otherwise(pl.col("embedded_at")),
+        )
+        self._save()
+
     def pending(self, stage: Stage) -> pl.DataFrame:
         """Return rows that have not yet completed the given stage."""
-        col = {"download": "downloaded_at", "parse": "parsed_at", "embed": "embedded_at"}[stage]
-        return self._df.filter(pl.col(col).is_null())
+        return self._df.filter(pl.col(_STAGE_COL[Stage(stage)]).is_null())
 
     def df(self) -> pl.DataFrame:
         return self._df

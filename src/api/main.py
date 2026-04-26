@@ -32,8 +32,7 @@ class Source(BaseModel):
     ticker: str
     year: int | str
     filing_type: str
-    section: str
-    section_label: str = ""
+    section_label: str
 
 
 class QueryResponse(BaseModel):

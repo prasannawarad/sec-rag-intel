@@ -23,7 +23,7 @@ from src.config import RAW_DIR, get_settings
 from src.embeddings.vectorstore import index_parquet
 from src.ingest.chunker import chunks_path, parse_and_persist
 from src.ingest.downloader import DEFAULT_TICKERS, download_filings
-from src.ingest.manifest import Manifest
+from src.ingest.manifest import Manifest, Stage
 from src.logging_setup import configure_logging
 
 configure_logging()
@@ -31,24 +31,28 @@ logger = logging.getLogger(__name__)
 
 
 def _run_parse_stage(mf: Manifest) -> None:
-    pending = mf.pending("parse")
+    pending = mf.pending(Stage.PARSE)
     if pending.is_empty():
         logger.info("Nothing pending for parse stage.")
         return
+    parsed: list[tuple[str, int]] = []
     for row in pending.iter_rows(named=True):
         try:
             _, n = parse_and_persist(Path(row["raw_path"]), row["ticker"])
-            mf.mark_parsed(row["accession_number"], num_chunks=n)
+            parsed.append((row["accession_number"], n))
         except Exception:
             logger.exception("Parse failed for %s", row["raw_path"])
+    if parsed:
+        mf.mark_parsed_batch(parsed)
 
 
 def _run_embed_stage(mf: Manifest) -> None:
     embed_model = get_settings().embedding_model_name
-    pending = mf.pending("embed").filter(pl.col("parsed_at").is_not_null())
+    pending = mf.pending(Stage.EMBED).filter(pl.col("parsed_at").is_not_null())
     if pending.is_empty():
         logger.info("Nothing pending for embed stage.")
         return
+    embedded: list[str] = []
     for row in pending.iter_rows(named=True):
         path = chunks_path(row["ticker"], row["fiscal_year"], row["accession_number"])
         if not path.exists():
@@ -56,10 +60,12 @@ def _run_embed_stage(mf: Manifest) -> None:
             continue
         try:
             n_new = index_parquet(pl.read_parquet(path))
-            mf.mark_embedded(row["accession_number"], embed_model=embed_model)
+            embedded.append(row["accession_number"])
             logger.info("%s: %d new chunks embedded", row["accession_number"], n_new)
         except Exception:
             logger.exception("Embed failed for %s", row["accession_number"])
+    if embedded:
+        mf.mark_embedded_batch(embedded, embed_model=embed_model)
 
 
 def run(tickers: list[str], limit: int = 1) -> None:

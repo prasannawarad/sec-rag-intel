@@ -66,6 +66,19 @@ def get_vectorstore() -> VectorStore:
     )
 
 
+def _row_to_metadata(row: dict) -> dict:
+    return {
+        "ticker": row["ticker"],
+        "year": int(row["fiscal_year"]),
+        "filing_type": row["filing_type"],
+        "item_code": row["item_code"],
+        "section_label": row["section_label"],
+        "chunk_id": row["chunk_id"],
+        "accession_number": row["accession_number"],
+        "content_hash": row["content_hash"],
+    }
+
+
 def _existing_hashes(store: VectorStore, candidate_hashes: list[str]) -> set[str]:
     """Return which of candidate_hashes are already in the store.
 
@@ -130,19 +143,7 @@ def index_parquet(df: pl.DataFrame) -> int:
     )
 
     docs = [
-        Document(
-            page_content=row["text"],
-            metadata={
-                "ticker": row["ticker"],
-                "year": int(row["fiscal_year"]),       # canonical key used by retriever filter
-                "filing_type": row["filing_type"],
-                "item_code": row["item_code"],
-                "section_label": row["section_label"], # canonical key used by citations
-                "chunk_id": row["chunk_id"],
-                "accession_number": row["accession_number"],
-                "content_hash": row["content_hash"],
-            },
-        )
+        Document(page_content=row["text"], metadata=_row_to_metadata(row))
         for row in new_df.iter_rows(named=True)
     ]
 

@@ -13,7 +13,6 @@ Public API:
 from __future__ import annotations
 
 import logging
-from typing import TypedDict
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
@@ -22,6 +21,7 @@ from langchain_core.runnables import RunnableLambda
 from langchain_groq import ChatGroq
 
 from src.chain.prompts import build_prompt
+from src.chain.types import RAGAnswer, RAGSource
 from src.config import get_settings
 from src.retrieval.retriever import build_retriever
 
@@ -33,11 +33,6 @@ _MAX_SESSIONS = 200  # evict oldest sessions beyond this to prevent unbounded gr
 _SESSION_STORE: dict[str, list[tuple[str, str]]] = {}
 
 
-class RAGAnswer(TypedDict):
-    answer: str
-    sources: list[dict[str, str | int]]
-
-
 def _format_docs(docs: list[Document]) -> str:
     return "\n\n".join(
         f"[{d.metadata.get('ticker')} {d.metadata.get('year')} "
@@ -47,14 +42,14 @@ def _format_docs(docs: list[Document]) -> str:
     )
 
 
-def _docs_to_sources(docs: list[Document]) -> list[dict[str, str | int]]:
+def _docs_to_sources(docs: list[Document]) -> list[RAGSource]:
     return [
-        {
-            "ticker": d.metadata.get("ticker", ""),
-            "year": d.metadata.get("year", ""),
-            "filing_type": d.metadata.get("filing_type", ""),
-            "section_label": d.metadata.get("section_label", ""),
-        }
+        RAGSource(
+            ticker=d.metadata.get("ticker", ""),
+            year=d.metadata.get("year", ""),
+            filing_type=d.metadata.get("filing_type", ""),
+            section_label=d.metadata.get("section_label", ""),
+        )
         for d in docs
     ]
 
