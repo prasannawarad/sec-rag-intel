@@ -3,17 +3,15 @@
 Embeddings are local (BAAI/bge-small-en-v1.5 via sentence-transformers) — no
 API key required. The same model runs in dev and on HF Spaces.
 
-Embedding stage features:
-- Hash-based dedup: chunks whose content_hash already exists in the store
-  are skipped, making re-runs after partial failures or re-indexing cheap.
-- Pre-flight cost estimate: prints token count + estimated embed time before
-  any API call (not needed for local model, but useful for future switches).
+get_embeddings() and get_vectorstore() are module-level singletons (lru_cache)
+so the 130MB model is loaded exactly once per process.
 """
 
 from __future__ import annotations
 
 import logging
 from collections.abc import Iterable
+from functools import lru_cache
 
 import polars as pl
 import tiktoken
@@ -34,8 +32,9 @@ def estimate_tokens(texts: list[str]) -> int:
     return sum(len(_TOKENIZER.encode(t)) for t in texts)
 
 
+@lru_cache(maxsize=1)
 def get_embeddings() -> Embeddings:
-    """Local sentence-transformers model. First call downloads ~130MB to ~/.cache."""
+    """Singleton — loads the 130MB BGE model once per process."""
     settings = get_settings()
     return HuggingFaceEmbeddings(
         model_name=settings.embedding_model_name,
@@ -44,8 +43,9 @@ def get_embeddings() -> Embeddings:
     )
 
 
+@lru_cache(maxsize=4)
 def get_vectorstore() -> VectorStore:
-    """Return a configured vector store based on VECTOR_STORE_MODE."""
+    """Singleton per (mode, persist_dir/index) — avoids redundant connections."""
     settings = get_settings()
     embeddings = get_embeddings()
 
@@ -66,14 +66,23 @@ def get_vectorstore() -> VectorStore:
     )
 
 
-def _existing_hashes(store: VectorStore) -> set[str]:
-    """Fetch all content_hash values already stored (Chroma local only)."""
+def _existing_hashes(store: VectorStore, candidate_hashes: list[str]) -> set[str]:
+    """Return which of candidate_hashes are already in the store.
+
+    Queries only the candidate set (not the full collection) to keep this
+    O(candidates) instead of O(collection).
+    """
+    if not candidate_hashes:
+        return set()
     try:
         from langchain_chroma import Chroma
 
         if isinstance(store, Chroma):
             col = store._collection  # type: ignore[attr-defined]
-            results = col.get(include=["metadatas"])
+            results = col.get(
+                where={"content_hash": {"$in": candidate_hashes}},
+                include=["metadatas"],
+            )
             return {m.get("content_hash", "") for m in (results["metadatas"] or [])}
     except Exception:
         pass
@@ -100,7 +109,8 @@ def index_parquet(df: pl.DataFrame) -> int:
         return 0
 
     store = get_vectorstore()
-    existing = _existing_hashes(store)
+    candidates = df["content_hash"].to_list()
+    existing = _existing_hashes(store, candidates)
 
     new_df = df.filter(~pl.col("content_hash").is_in(existing))
     if new_df.is_empty():
@@ -112,11 +122,10 @@ def index_parquet(df: pl.DataFrame) -> int:
         logger.info("Skipping %d already-indexed chunks, embedding %d new", skipped, len(new_df))
 
     texts = new_df["text"].to_list()
-    total_tokens = estimate_tokens(texts)
     logger.info(
         "Pre-flight: %d chunks | %d tokens | model=%s",
         len(texts),
-        total_tokens,
+        estimate_tokens(texts),
         get_settings().embedding_model_name,
     )
 
@@ -125,16 +134,13 @@ def index_parquet(df: pl.DataFrame) -> int:
             page_content=row["text"],
             metadata={
                 "ticker": row["ticker"],
-                "fiscal_year": int(row["fiscal_year"]),
+                "year": int(row["fiscal_year"]),       # canonical key used by retriever filter
                 "filing_type": row["filing_type"],
                 "item_code": row["item_code"],
-                "section_label": row["section_label"],
+                "section_label": row["section_label"], # canonical key used by citations
                 "chunk_id": row["chunk_id"],
                 "accession_number": row["accession_number"],
                 "content_hash": row["content_hash"],
-                # Keep 'section' alias for retriever filter compatibility
-                "section": row["section_label"],
-                "year": int(row["fiscal_year"]),
             },
         )
         for row in new_df.iter_rows(named=True)

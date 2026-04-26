@@ -61,7 +61,7 @@ class Manifest:
     def has(self, accession_number: str) -> bool:
         if self._df.is_empty():
             return False
-        return accession_number in self._df["accession_number"].to_list()
+        return (self._df["accession_number"] == accession_number).any()
 
     def upsert_filing(self, header: FilingHeader, ticker: str, raw_path: Path) -> None:
         """Insert or replace a row for this filing with download metadata."""

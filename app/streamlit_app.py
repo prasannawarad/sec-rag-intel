@@ -18,6 +18,16 @@ import streamlit as st
 from src.chain.rag_chain import build_rag_chain, clear_session
 from src.ingest.downloader import DEFAULT_TICKERS
 
+
+def _render_sources(sources: list[dict]) -> None:
+    """Render a source list inside the current st context."""
+    with st.expander("Sources", expanded=False):
+        for s in sources:
+            st.markdown(
+                f"- **{s['ticker']}** {s['year']} {s['filing_type']}"
+                f" — *{s.get('section_label', '')}*"
+            )
+
 st.set_page_config(page_title="SEC RAG Intel", page_icon="📊", layout="wide")
 
 # ── Session bootstrap ──────────────────────────────────────────────────────────
@@ -64,12 +74,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
         if msg["role"] == "assistant" and msg.get("sources"):
-            with st.expander("Sources", expanded=False):
-                for s in msg["sources"]:
-                    st.markdown(
-                        f"- **{s['ticker']}** {s['year']} {s['filing_type']}"
-                        f" — *{s.get('section_label') or s.get('section', '')}*"
-                    )
+            _render_sources(msg["sources"])
 
 # Chat input (pinned to bottom by Streamlit)
 if question := st.chat_input("e.g. What are Apple's main supply chain risks?"):
@@ -95,12 +100,7 @@ if question := st.chat_input("e.g. What are Apple's main supply chain risks?"):
 
         st.write(result["answer"])
         if result["sources"]:
-            with st.expander("Sources", expanded=False):
-                for s in result["sources"]:
-                    st.markdown(
-                        f"- **{s['ticker']}** {s['year']} {s['filing_type']}"
-                        f" — *{s.get('section_label') or s.get('section', '')}*"
-                    )
+            _render_sources(result["sources"])
 
     st.session_state.messages.append(
         {

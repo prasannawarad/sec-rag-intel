@@ -27,9 +27,9 @@ from src.retrieval.retriever import build_retriever
 
 logger = logging.getLogger(__name__)
 
-MAX_HISTORY_TURNS = 4  # last N human/AI pairs sent to the LLM
+MAX_HISTORY_TURNS = 4
+_MAX_SESSIONS = 200  # evict oldest sessions beyond this to prevent unbounded growth
 
-# In-process session store: session_id -> [(human_msg, ai_msg), ...]
 _SESSION_STORE: dict[str, list[tuple[str, str]]] = {}
 
 
@@ -41,7 +41,7 @@ class RAGAnswer(TypedDict):
 def _format_docs(docs: list[Document]) -> str:
     return "\n\n".join(
         f"[{d.metadata.get('ticker')} {d.metadata.get('year')} "
-        f"{d.metadata.get('filing_type')} - {d.metadata.get('section', d.metadata.get('section_label', ''))}]\n"
+        f"{d.metadata.get('filing_type')} - {d.metadata.get('section_label', '')}]\n"
         f"{d.page_content}"
         for d in docs
     )
@@ -51,13 +51,19 @@ def _docs_to_sources(docs: list[Document]) -> list[dict[str, str | int]]:
     return [
         {
             "ticker": d.metadata.get("ticker", ""),
-            "year": d.metadata.get("year", d.metadata.get("fiscal_year", "")),
+            "year": d.metadata.get("year", ""),
             "filing_type": d.metadata.get("filing_type", ""),
-            "section": d.metadata.get("section", d.metadata.get("section_label", "")),
-            "section_label": d.metadata.get("section_label", d.metadata.get("section", "")),
+            "section_label": d.metadata.get("section_label", ""),
         }
         for d in docs
     ]
+
+
+def _evict_sessions_if_needed() -> None:
+    if len(_SESSION_STORE) > _MAX_SESSIONS:
+        evict = list(_SESSION_STORE.keys())[: len(_SESSION_STORE) - _MAX_SESSIONS]
+        for k in evict:
+            del _SESSION_STORE[k]
 
 
 def get_session_history(session_id: str) -> list[tuple[str, str]]:
@@ -76,9 +82,7 @@ def build_rag_chain(
 ) -> RunnableLambda:
     """Return a session-aware RAG chain.
 
-    The returned runnable accepts:
-      - a plain string (backwards-compatible, uses session "default")
-      - a dict {"question": str, "session_id": str}
+    Accepts a plain string (session "default") or {"question": str, "session_id": str}.
     """
     settings = get_settings()
     retriever = build_retriever(ticker=ticker, year=year, filing_type=filing_type)
@@ -93,36 +97,26 @@ def build_rag_chain(
             question = inputs["question"]
             session_id = inputs.get("session_id", "default")
 
-        # Retrieve with the current question only (not augmented by history)
         docs = retriever.invoke(question)
         context = _format_docs(docs)
 
-        # Build chat_history messages from last N turns
         history = get_session_history(session_id)[-MAX_HISTORY_TURNS:]
-        history_messages = []
-        for human, ai in history:
-            history_messages.append(HumanMessage(content=human))
-            history_messages.append(AIMessage(content=ai))
+        history_messages = [
+            msg
+            for human, ai in history
+            for msg in (HumanMessage(content=human), AIMessage(content=ai))
+        ]
 
         answer = answer_chain.invoke(
-            {
-                "context": context,
-                "question": question,
-                "chat_history": history_messages,
-            }
+            {"context": context, "question": question, "chat_history": history_messages}
         )
 
-        # Persist turn to session store
         if session_id not in _SESSION_STORE:
             _SESSION_STORE[session_id] = []
+            _evict_sessions_if_needed()
         _SESSION_STORE[session_id].append((question, answer))
 
-        logger.debug(
-            "session=%s turn=%d question=%r",
-            session_id,
-            len(_SESSION_STORE[session_id]),
-            question[:60],
-        )
+        logger.debug("session=%s turn=%d", session_id, len(_SESSION_STORE[session_id]))
         return RAGAnswer(answer=answer, sources=_docs_to_sources(docs))
 
     return RunnableLambda(_run)
