@@ -46,7 +46,7 @@ def _docs_to_sources(docs: list[Document]) -> list[RAGSource]:
     return [
         RAGSource(
             ticker=d.metadata.get("ticker", ""),
-            year=d.metadata.get("year", ""),
+            year=int(d.metadata.get("year", 0)),
             filing_type=d.metadata.get("filing_type", ""),
             section_label=d.metadata.get("section_label", ""),
         )
@@ -55,9 +55,9 @@ def _docs_to_sources(docs: list[Document]) -> list[RAGSource]:
 
 
 def _evict_sessions_if_needed() -> None:
+    # Dict preserves insertion order (CPython 3.7+), so keys()[0] is the oldest session.
     if len(_SESSION_STORE) > _MAX_SESSIONS:
-        evict = list(_SESSION_STORE.keys())[: len(_SESSION_STORE) - _MAX_SESSIONS]
-        for k in evict:
+        for k in list(_SESSION_STORE.keys())[: len(_SESSION_STORE) - _MAX_SESSIONS]:
             del _SESSION_STORE[k]
 
 

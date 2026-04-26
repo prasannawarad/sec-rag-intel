@@ -149,7 +149,7 @@ class Manifest:
 
     def pending(self, stage: Stage) -> pl.DataFrame:
         """Return rows that have not yet completed the given stage."""
-        return self._df.filter(pl.col(_STAGE_COL[Stage(stage)]).is_null())
+        return self._df.filter(pl.col(_STAGE_COL[stage]).is_null())
 
     def df(self) -> pl.DataFrame:
         return self._df

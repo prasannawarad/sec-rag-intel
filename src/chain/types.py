@@ -11,7 +11,7 @@ from typing import TypedDict
 
 class RAGSource(TypedDict):
     ticker: str
-    year: int | str
+    year: int
     filing_type: str
     section_label: str
 

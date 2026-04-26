@@ -30,7 +30,7 @@ class QueryRequest(BaseModel):
 
 class Source(BaseModel):
     ticker: str
-    year: int | str
+    year: int
     filing_type: str
     section_label: str
 
