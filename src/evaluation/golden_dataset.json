@@ -1,0 +1,146 @@
+{
+  "version": "0.1",
+  "description": "Golden Q&A pairs for RAGAS evaluation. Replace ground_truth fields with verified answers from the actual filings before running evaluate.py.",
+  "questions": [
+    {
+      "id": "q01",
+      "question": "What are the main risk factors disclosed by Apple in its most recent 10-K?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "AAPL", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q02",
+      "question": "How does Microsoft describe its cloud revenue growth drivers?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "MSFT", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q03",
+      "question": "Compare the R&D spending of Apple and Microsoft for the most recent fiscal year.",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "comparative"
+    },
+    {
+      "id": "q04",
+      "question": "What is Amazon's segment revenue breakdown by AWS, North America, and International?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "AMZN", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q05",
+      "question": "What does Tesla disclose about its supply chain risks?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "TSLA", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q06",
+      "question": "Summarise NVIDIA's Management Discussion and Analysis section on data-centre demand.",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "NVDA", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q07",
+      "question": "What credit-risk exposures does JPMorgan Chase highlight?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "JPM", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q08",
+      "question": "Has Meta disclosed any material litigation related to user privacy?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "META", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q09",
+      "question": "What does Alphabet say about ad revenue concentration risk?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "GOOGL", "filing_type": "10-K"},
+      "type": "factual"
+    },
+    {
+      "id": "q10",
+      "question": "Which companies in the dataset call out generative AI as a material risk factor?",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "multi_hop"
+    },
+    {
+      "id": "q11",
+      "question": "What stock repurchase programmes are active across the eight companies?",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "multi_hop"
+    },
+    {
+      "id": "q12",
+      "question": "How does Apple describe its dependence on third-party manufacturers?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "AAPL"},
+      "type": "factual"
+    },
+    {
+      "id": "q13",
+      "question": "What is Microsoft's approach to AI safety as described in its filings?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "MSFT"},
+      "type": "factual"
+    },
+    {
+      "id": "q14",
+      "question": "Compare Tesla's and NVIDIA's gross margin trends.",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "comparative"
+    },
+    {
+      "id": "q15",
+      "question": "What climate-related risks does Amazon report?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "AMZN"},
+      "type": "factual"
+    },
+    {
+      "id": "q16",
+      "question": "Which tech companies disclose exposure to China-related regulatory risk?",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "multi_hop"
+    },
+    {
+      "id": "q17",
+      "question": "What is JPMorgan's tier 1 capital ratio?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "JPM"},
+      "type": "factual"
+    },
+    {
+      "id": "q18",
+      "question": "How does Meta describe its Reality Labs operating losses?",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "META"},
+      "type": "factual"
+    },
+    {
+      "id": "q19",
+      "question": "What cybersecurity incident disclosures appear in the dataset?",
+      "ground_truth": "TODO",
+      "filters": {},
+      "type": "multi_hop"
+    },
+    {
+      "id": "q20",
+      "question": "Summarise Alphabet's other-bets segment performance.",
+      "ground_truth": "TODO",
+      "filters": {"ticker": "GOOGL"},
+      "type": "factual"
+    }
+  ]
+}
