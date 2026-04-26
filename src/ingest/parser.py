@@ -1,4 +1,5 @@
 """HTML → clean text parsing for SEC filings."""
+
 from __future__ import annotations
 
 import logging

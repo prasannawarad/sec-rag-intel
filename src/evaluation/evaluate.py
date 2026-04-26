@@ -1,4 +1,5 @@
 """RAGAS evaluation runner. Outputs scores to eval_results/scores.json."""
+
 from __future__ import annotations
 
 import json

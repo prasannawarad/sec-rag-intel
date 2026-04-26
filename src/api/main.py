@@ -1,4 +1,5 @@
 """FastAPI app: POST /query, GET /companies, GET /metrics."""
+
 from __future__ import annotations
 
 import json
@@ -40,9 +41,7 @@ class QueryResponse(BaseModel):
 
 @app.post("/query", response_model=QueryResponse)
 def query(req: QueryRequest) -> QueryResponse:
-    chain = build_rag_chain(
-        ticker=req.ticker, year=req.year, filing_type=req.filing_type
-    )
+    chain = build_rag_chain(ticker=req.ticker, year=req.year, filing_type=req.filing_type)
     result = chain.invoke(req.question)
     return QueryResponse(answer=result["answer"], sources=result["sources"])
 

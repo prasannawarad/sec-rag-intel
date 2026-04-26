@@ -1,4 +1,5 @@
 """MMR retriever with optional metadata filters."""
+
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,5 @@
 """LCEL RAG chain: retriever → prompt → Groq LLM → parser, with source attribution."""
+
 from __future__ import annotations
 
 import logging

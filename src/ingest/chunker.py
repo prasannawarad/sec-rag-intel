@@ -1,4 +1,5 @@
 """Token-aware text chunking with metadata for RAG."""
+
 from __future__ import annotations
 
 import logging

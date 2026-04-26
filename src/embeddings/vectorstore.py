@@ -1,4 +1,5 @@
 """Vector store factory: switches between local Chroma and prod Pinecone."""
+
 from __future__ import annotations
 
 import logging

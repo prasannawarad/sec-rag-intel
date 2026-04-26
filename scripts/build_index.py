@@ -1,4 +1,5 @@
 """End-to-end indexing pipeline: download → parse → chunk → embed → store."""
+
 from __future__ import annotations
 
 import logging

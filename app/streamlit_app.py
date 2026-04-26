@@ -3,6 +3,7 @@
 Pure UI: it talks to the FastAPI backend or imports the chain directly.
 No business logic lives in this file.
 """
+
 from __future__ import annotations
 
 import streamlit as st
@@ -12,7 +13,9 @@ from src.ingest.downloader import DEFAULT_TICKERS
 
 st.set_page_config(page_title="SEC RAG Intel", layout="wide")
 st.title("SEC Filing Intelligence")
-st.caption("Ask natural-language questions about 10-K / 10-Q filings — answers are grounded and cited.")
+st.caption(
+    "Ask natural-language questions about 10-K / 10-Q filings — answers are grounded and cited."
+)
 
 with st.sidebar:
     st.header("Filters")
@@ -40,6 +43,4 @@ if st.button("Ask", type="primary", disabled=not question.strip()):
 
     st.subheader("Sources")
     for s in result["sources"]:
-        st.markdown(
-            f"- **{s['ticker']}** {s['year']} {s['filing_type']} — _{s['section']}_"
-        )
+        st.markdown(f"- **{s['ticker']}** {s['year']} {s['filing_type']} — _{s['section']}_")

@@ -1,4 +1,5 @@
 """Wrapper around sec-edgar-downloader for fetching 10-K / 10-Q filings."""
+
 from __future__ import annotations
 
 import logging
@@ -9,7 +10,14 @@ from src.config import RAW_DIR, get_settings
 logger = logging.getLogger(__name__)
 
 DEFAULT_TICKERS: list[str] = [
-    "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "JPM", "NVDA", "META",
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "GOOGL",
+    "TSLA",
+    "JPM",
+    "NVDA",
+    "META",
 ]
 
 
