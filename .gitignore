@@ -1,0 +1,59 @@
+# Environments
+.env
+.env.local
+.env.*.local
+venv/
+.venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Data (real downloads + processed chunks should not be committed)
+data/raw/
+data/processed/
+data/**/*.html
+data/**/*.htm
+data/**/*.txt
+!data/.gitkeep
+
+# Vector store local persistence
+chroma_db/
+*.sqlite3
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Streamlit
+.streamlit/secrets.toml
