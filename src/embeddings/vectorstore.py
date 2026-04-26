@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStore

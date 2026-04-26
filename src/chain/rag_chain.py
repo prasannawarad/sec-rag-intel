@@ -6,7 +6,7 @@ from typing import TypedDict
 
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.runnables import RunnableLambda
 from langchain_groq import ChatGroq
 
 from src.chain.prompts import build_prompt
