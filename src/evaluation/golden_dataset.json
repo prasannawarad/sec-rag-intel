@@ -5,141 +5,177 @@
     {
       "id": "q01",
       "question": "What are the main risk factors disclosed by Apple in its most recent 10-K?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "AAPL", "filing_type": "10-K"},
+      "ground_truth": "The main risk factors disclosed by Apple in its 2025 Form 10-K include macroeconomic and industry risks, such as adverse economic conditions, global and regional economic instability, and trade restrictions. These risks can materially adversely affect the Company's business, results of operations, financial condition, and stock price. Additionally, Apple's global supply chain and international operations make it vulnerable to political events, trade disputes, geopolitical tensions, and other business interruptions. Restrictions on international trade, such as tariffs and other controls, can also have a significant impact on the Company's business and supply chain.",
+      "filters": {
+        "ticker": "AAPL",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q02",
       "question": "How does Microsoft describe its cloud revenue growth drivers?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "MSFT", "filing_type": "10-K"},
+      "ground_truth": "Microsoft does not explicitly describe its cloud revenue growth drivers in the provided excerpts. The excerpts discuss the company's gaming business, Xbox, and various risk factors, but do not specifically address the drivers of cloud revenue growth. They do mention the growth of cloud-based offerings and the storage and processing of personal data in a cloud-based environment, but do not provide details on the drivers of cloud revenue growth.",
+      "filters": {
+        "ticker": "MSFT",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q03",
       "question": "Compare the R&D spending of Apple and Microsoft for the most recent fiscal year.",
-      "ground_truth": "TODO",
+      "ground_truth": "According to the excerpts, Apple's research and development (R&D) expense for 2025 was $34,550 million. The excerpts do not provide Microsoft's R&D spending for the most recent fiscal year. Therefore, a direct comparison between the two companies' R&D spending cannot be made based on the provided information.",
       "filters": {},
       "type": "comparative"
     },
     {
       "id": "q04",
       "question": "What is Amazon's segment revenue breakdown by AWS, North America, and International?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "AMZN", "filing_type": "10-K"},
+      "ground_truth": "Amazon's segment revenue breakdown is as follows: North America accounted for 59% of net sales in 2025, International accounted for 23%, and AWS accounted for 18%. In terms of actual revenue, North America had $426,305 million in net sales, International had $161,894 million, and AWS had $128,725 million in 2025.",
+      "filters": {
+        "ticker": "AMZN",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q05",
       "question": "What does Tesla disclose about its supply chain risks?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "TSLA", "filing_type": "10-K"},
+      "ground_truth": "Tesla discloses that its supply chain is exposed to multiple potential sources of component shortages due to its reliance on hundreds of global suppliers, including single-source direct suppliers. The company notes that unexpected changes in business conditions, materials pricing, labor issues, wars, trade policies, natural disasters, and other factors beyond its control could affect its suppliers' ability to deliver components. Additionally, Tesla mentions that U.S. trade policy alterations, such as heightened import tariffs, have impacted its supply chain costs and may impact the availability of certain technologies or components. The unavailability of any component or supplier could result in production delays, idle manufacturing facilities, and loss of access to important technology and tools for producing and supporting its products.",
+      "filters": {
+        "ticker": "TSLA",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q06",
       "question": "Summarise NVIDIA's Management Discussion and Analysis section on data-centre demand.",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "NVDA", "filing_type": "10-K"},
+      "ground_truth": "NVIDIA's data center revenue growth was driven by demand for compute and networking platforms for accelerated computing and AI solutions, with the Blackwell architectures representing the majority of data center revenue. The company notes that the availability of data centers, energy, and capital to support the buildout of NVIDIA AI infrastructure is crucial, and any shortage could impact future revenue and financial performance. Additionally, access to capital can be constrained for less-capitalized companies, which may delay customer and partner deployments or reduce the scale of accelerated computing and AI adoption. The company is executing on data center compute product introductions, including new advanced architectures, to meet growing demand for AI infrastructure.",
+      "filters": {
+        "ticker": "NVDA",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q07",
       "question": "What credit-risk exposures does JPMorgan Chase highlight?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "JPM", "filing_type": "10-K"},
+      "ground_truth": "JPMorgan Chase highlights the following credit-risk exposures: adverse changes in the financial condition of clients, customers, counterparties, central counterparties, and other market participants; potential losses due to declines in the value of collateral; and potential negative impacts from concentrations of credit risk with respect to clients, customers, counterparties, and other market participants.",
+      "filters": {
+        "ticker": "JPM",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q08",
       "question": "Has Meta disclosed any material litigation related to user privacy?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "META", "filing_type": "10-K"},
+      "ground_truth": "Meta has disclosed litigation, including class action lawsuits, as a risk factor, but it has not specifically disclosed any material litigation related to user privacy in the provided excerpts. However, it has mentioned government investigations, enforcement actions, and settlements, including litigation and investigations by privacy authorities.",
+      "filters": {
+        "ticker": "META",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q09",
       "question": "What does Alphabet say about ad revenue concentration risk?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "GOOGL", "filing_type": "10-K"},
+      "ground_truth": "Alphabet generates more than 70% of its total revenues from online advertising. The company notes that reduced spending by advertisers, loss of partners, shifts in online advertising, and new technologies that block ads could harm its business. Additionally, expenditures by advertisers tend to correlate with overall economic conditions, and adverse macroeconomic conditions could affect demand for advertising, resulting in fluctuations in ad spend. Alphabet's advertisers can also terminate their contracts at any time if the company does not create sufficient value for them.",
+      "filters": {
+        "ticker": "GOOGL",
+        "filing_type": "10-K"
+      },
       "type": "factual"
     },
     {
       "id": "q10",
       "question": "Which companies in the dataset call out generative AI as a material risk factor?",
-      "ground_truth": "TODO",
+      "ground_truth": "Based on the provided excerpts, the companies that mention AI or generative AI as a risk factor are: \n\n* MSFT (Microsoft) mentions the need to continuously engineer more secure products and services, and enhance security, threat detection, and reliability features, as well as the development of mitigation technologies to secure customers from attacks.\n* GOOGL (Google) mentions that AI is quickly reshaping the advertising industry and that they must adapt effectively to meet this shift.\n* TSLA (Tesla) mentions the need to further advance their capabilities in AI to be successful.\n* NVDA (NVIDIA) mentions issues relating to the responsible use of their technologies, including AI, which may result in reputational or financial harm and liability.\n\nHowever, none of the companies explicitly mention \"generative AI\" as a material risk factor. They mention AI in general as a factor that could impact their business.",
       "filters": {},
       "type": "multi_hop"
     },
     {
       "id": "q11",
       "question": "What stock repurchase programmes are active across the eight companies?",
-      "ground_truth": "TODO",
+      "ground_truth": "The excerpts only mention one company, Apple Inc. As of September 27, 2025, Apple Inc. had two active stock repurchase programs: one announced on May 2, 2024, to repurchase up to $110 billion of common stock, which had been fully utilized, and another announced on May 1, 2025, to repurchase up to $100 billion of common stock, with $221 million utilized as of September 27, 2025.",
       "filters": {},
       "type": "multi_hop"
     },
     {
       "id": "q12",
       "question": "How does Apple describe its dependence on third-party manufacturers?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "AAPL"},
+      "ground_truth": "Although most components essential to Apple's business are generally available from multiple sources, certain components are currently obtained from single or limited sources. The Company competes for various components with other participants in the markets for smartphones, personal computers, tablets, wearables, and accessories, and many components are subject to industry-wide shortage and significant commodity pricing fluctuations. Apple has entered into agreements for the supply of many components, but may not be able to extend or renew these agreements on similar terms, or at all.",
+      "filters": {
+        "ticker": "AAPL"
+      },
       "type": "factual"
     },
     {
       "id": "q13",
       "question": "What is Microsoft's approach to AI safety as described in its filings?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "MSFT"},
+      "ground_truth": "Microsoft's approach to AI safety is not explicitly described in the provided excerpts from its SEC filings. The excerpts primarily discuss the company's approach to security, data protection, and risk management, but do not mention AI safety specifically.",
+      "filters": {
+        "ticker": "MSFT"
+      },
       "type": "factual"
     },
     {
       "id": "q14",
       "question": "Compare Tesla's and NVIDIA's gross margin trends.",
-      "ground_truth": "TODO",
+      "ground_truth": "Tesla's gross margin for total automotive decreased from 18.4% to 17.8% in 2025, while the gross margin for the energy generation and storage segment increased from 26.2% to 29.8%. In contrast, NVIDIA's gross margin decreased from 75.0% to 71.1% in fiscal year 2026, primarily due to a change in business model and a $4.5 billion charge associated with excess inventory and purchase obligations. Overall, Tesla's gross margin trends were mixed, while NVIDIA's gross margin trend was downward.",
       "filters": {},
       "type": "comparative"
     },
     {
       "id": "q15",
       "question": "What climate-related risks does Amazon report?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "AMZN"},
+      "ground_truth": "Amazon reports that its business may be affected by extreme weather, including as a result of climate change, which can impact demand for its products and services. Additionally, the company's international operations and supply chain may be exposed to climate-related risks, although specific details are not provided in the excerpts.",
+      "filters": {
+        "ticker": "AMZN"
+      },
       "type": "factual"
     },
     {
       "id": "q16",
       "question": "Which tech companies disclose exposure to China-related regulatory risk?",
-      "ground_truth": "TODO",
+      "ground_truth": "Based on the provided excerpts, Apple Inc. (AAPL) discloses exposure to China-related regulatory risk, as it mentions that a significant majority of its manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, and that restrictions on international trade, such as tariffs, can materially adversely affect its business and supply chain, particularly in countries and regions where it derives a significant portion of its revenues.",
       "filters": {},
       "type": "multi_hop"
     },
     {
       "id": "q17",
       "question": "What is JPMorgan's tier 1 capital ratio?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "JPM"},
+      "ground_truth": "JPMorgan's Tier 1 capital ratio is 15.5% (Standardized) and 16.8% (as of the previous year), with the current year's Advanced Tier 1 capital ratio being 15.0% and 16.9% for Standardized and Advanced approaches, respectively, as of December 31, 2025.",
+      "filters": {
+        "ticker": "JPM"
+      },
       "type": "factual"
     },
     {
       "id": "q18",
       "question": "How does Meta describe its Reality Labs operating losses?",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "META"},
+      "ground_truth": "Meta describes its Reality Labs operating losses as an increase of 8% in 2025, with an operating loss of $19,193 million, compared to an operating loss of $17,729 million in 2024.",
+      "filters": {
+        "ticker": "META"
+      },
       "type": "factual"
     },
     {
       "id": "q19",
       "question": "What cybersecurity incident disclosures appear in the dataset?",
-      "ground_truth": "TODO",
+      "ground_truth": "Ransomware and other cybersecurity attacks are mentioned as risks that the Company's operations, retail stores, and facilities, as well as those of its suppliers and contract manufacturers, are subject to.",
       "filters": {},
       "type": "multi_hop"
     },
     {
       "id": "q20",
       "question": "Summarise Alphabet's other-bets segment performance.",
-      "ground_truth": "TODO",
-      "filters": {"ticker": "GOOGL"},
+      "ground_truth": "Alphabet's Other Bets segment includes businesses such as Waymo, a fully autonomous driving technology company that provides paid ride-hailing services to customers in multiple cities, and Isomorphic Labs, which applies AI to accelerate the development of new medicines. The segment is part of Alphabet's structure, which aims to help each business prosper through strong leaders and independence. However, the excerpts do not provide specific financial performance details for the Other Bets segment.",
+      "filters": {
+        "ticker": "GOOGL"
+      },
       "type": "factual"
     }
   ]
