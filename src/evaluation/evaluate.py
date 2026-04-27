@@ -94,7 +94,13 @@ def _extract_scores(result) -> dict:
         rows = result.scores
         if rows:
             keys = rows[0].keys()
-            return {k: float(sum(r[k] for r in rows if r[k] is not None) / max(sum(1 for r in rows if r[k] is not None), 1)) for k in keys}
+            return {
+                k: float(
+                    sum(r[k] for r in rows if r[k] is not None)
+                    / max(sum(1 for r in rows if r[k] is not None), 1)
+                )
+                for k in keys
+            }
     # Older versions expose items() or act as a dict
     if hasattr(result, "items"):
         return {k: float(v) for k, v in result.items() if v is not None}

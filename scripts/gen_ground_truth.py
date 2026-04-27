@@ -115,9 +115,7 @@ def _get_context(df: pl.DataFrame, qid: str) -> str:
 
     parts: list[str] = []
     for ticker in tickers:
-        rows = df.filter(
-            (pl.col("ticker") == ticker) & pl.col("item_code").is_in(item_codes)
-        )
+        rows = df.filter((pl.col("ticker") == ticker) & pl.col("item_code").is_in(item_codes))
         if rows.is_empty():
             continue
         # Prefer chunks that contain any keyword; fall back to all chunks

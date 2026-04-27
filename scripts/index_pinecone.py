@@ -40,7 +40,9 @@ def _ensure_pinecone_index(index_name: str) -> None:
         logger.info("Pinecone index '%s' already exists", index_name)
         return
 
-    logger.info("Creating Pinecone serverless index '%s' (dim=%d, cosine)", index_name, EMBEDDING_DIM)
+    logger.info(
+        "Creating Pinecone serverless index '%s' (dim=%d, cosine)", index_name, EMBEDDING_DIM
+    )
     pc.create_index(
         name=index_name,
         dimension=EMBEDDING_DIM,
