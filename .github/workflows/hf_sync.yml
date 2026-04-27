@@ -7,15 +7,35 @@ on:
 jobs:
   sync-to-hf:
     runs-on: ubuntu-latest
+    # Only run if HF_TOKEN is set in repo secrets
+    if: ${{ github.repository_owner == 'prasannawarad' }}
     steps:
+      - name: Check HF_TOKEN
+        id: check_token
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "HF_TOKEN secret not set — skipping HF Spaces sync."
+            echo "To enable: create a Write token at https://huggingface.co/settings/tokens"
+            echo "and add it to repo Settings → Secrets → Actions as HF_TOKEN."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check_token.outputs.skip == 'false'
         with:
           fetch-depth: 0
           lfs: true
 
       - name: Push to HuggingFace Spaces
+        if: steps.check_token.outputs.skip == 'false'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add hf https://prasannawarad:${HF_TOKEN}@huggingface.co/spaces/prasannawarad/sec-rag-intel
+          # HF requires user:token in the URL; "user" is literal here, the token
+          # is what authenticates. See https://huggingface.co/docs/hub/spaces-github-actions
+          git remote add hf "https://user:${HF_TOKEN}@huggingface.co/spaces/prasannawarad/sec-rag-intel"
           git push hf main --force
