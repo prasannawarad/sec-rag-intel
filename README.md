@@ -1,3 +1,14 @@
+---
+title: SEC RAG Intel
+emoji: 📊
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: "1.38.0"
+app_file: app/streamlit_app.py
+pinned: false
+---
+
 # SEC Filing Intelligence (sec-rag-intel)
 
 > Production-grade RAG system that lets analysts query 10-K / 10-Q SEC filings in
@@ -119,7 +130,35 @@ tests/              pytest unit + integration
 - **Groq Llama 3.3 70B as RAGAS judge** — keeps the project on a single LLM provider, but introduces a mild self-evaluation bias since the same model family generates *and* judges. Mitigation: faithfulness scores are spot-checked manually on a 5-question random sample.
 
 ## Deployment
-Deployed on HuggingFace Spaces (Streamlit SDK). _Live link TBD._
+
+Deployed to [HuggingFace Spaces](https://huggingface.co/spaces/prasannawarad/sec-rag-intel) (Streamlit SDK).  
+The live demo uses **Pinecone** as the vector store so the index persists across Space restarts.
+
+### One-time setup
+
+```bash
+# 1. Get a free Pinecone account → create a serverless index named "sec-rag-intel"
+#    (or let index_pinecone.py create it automatically)
+#    Add PINECONE_API_KEY to your .env
+
+# 2. Upload all chunks to Pinecone
+make index-pinecone           # uses VECTOR_STORE_MODE=pinecone from .env
+
+# 3. Get a HuggingFace account → create a Space named "sec-rag-intel" (Streamlit SDK)
+#    In the Space settings → Secrets, add:
+#      GROQ_API_KEY          = your Groq key
+#      PINECONE_API_KEY      = your Pinecone key
+#      VECTOR_STORE_MODE     = pinecone
+#      PINECONE_INDEX_NAME   = sec-rag-intel
+
+# 4. In your GitHub repo → Settings → Secrets → Actions, add:
+#      HF_TOKEN              = your HuggingFace write token
+
+# 5. Push to main — the GitHub Action (.github/workflows/hf_sync.yml) auto-deploys
+git push origin main
+```
+
+After that, every push to `main` triggers an automatic sync to HuggingFace Spaces.
 
 ## License
 MIT

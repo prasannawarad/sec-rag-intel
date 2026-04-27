@@ -1,18 +1,20 @@
-.PHONY: help install dev-install lint format test ingest index eval api ui clean
+.PHONY: help install dev-install lint format test ingest index index-pinecone eval api ui clean
 
 help:
-	@echo "make install        — install runtime dependencies"
-	@echo "make dev-install    — install + pre-commit hooks"
-	@echo "make lint           — ruff check + mypy"
-	@echo "make format         — ruff format + auto-fix"
-	@echo "make test           — pytest (unit only)"
-	@echo "make test-all       — pytest including integration markers"
-	@echo "make ingest         — download SEC filings"
-	@echo "make index          — full pipeline: download → parse → chunk → embed"
-	@echo "make eval           — run RAGAS evaluation"
-	@echo "make api            — run FastAPI dev server"
-	@echo "make ui             — run Streamlit app"
-	@echo "make clean          — remove caches and processed data"
+	@echo "make install          — install runtime dependencies"
+	@echo "make dev-install      — install + pre-commit hooks"
+	@echo "make lint             — ruff check + mypy"
+	@echo "make format           — ruff format + auto-fix"
+	@echo "make test             — pytest (unit only)"
+	@echo "make test-all         — pytest including integration markers"
+	@echo "make ingest           — download SEC filings"
+	@echo "make index            — full pipeline: download → parse → chunk → embed (Chroma)"
+	@echo "make index-pinecone   — embed all chunks into Pinecone (prod, needs PINECONE_API_KEY)"
+	@echo "make eval             — run RAGAS evaluation (20 questions)"
+	@echo "make eval-subset N=5  — run RAGAS on first N questions (saves Groq tokens)"
+	@echo "make api              — run FastAPI dev server"
+	@echo "make ui               — run Streamlit app"
+	@echo "make clean            — remove caches and processed data"
 
 install:
 	pip install -r requirements.txt
@@ -40,8 +42,14 @@ ingest:
 index:
 	python scripts/build_index.py
 
+index-pinecone:
+	VECTOR_STORE_MODE=pinecone python -m scripts.index_pinecone
+
 eval:
 	python -m src.evaluation.evaluate
+
+eval-subset:
+	python -m src.evaluation.evaluate --subset $(N)
 
 api:
 	uvicorn src.api.main:app --reload --port 8000
