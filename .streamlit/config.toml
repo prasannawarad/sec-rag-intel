@@ -1,0 +1,12 @@
+# Editorial-ledger theme — financial print: paper, ink, ledger green.
+# Typography (Fraunces / IBM Plex Mono) is layered on via CSS in streamlit_app.py.
+[theme]
+base = "light"
+primaryColor = "#0E5A43"
+backgroundColor = "#F7F2E9"
+secondaryBackgroundColor = "#EFE7D6"
+textColor = "#1C1B17"
+font = "serif"
+
+[browser]
+gatherUsageStats = false
