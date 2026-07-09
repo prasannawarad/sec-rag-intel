@@ -92,6 +92,22 @@ make ui       # Streamlit on http://localhost:8501
 make eval     # writes eval_results/scores.json
 ```
 
+## Free-tier guardrails (cost engineering)
+
+The whole stack runs on free tiers, so Groq's daily quota (~100k tokens/day on
+`llama-3.3-70b-versatile`) is treated as a production constraint, not an afterthought:
+
+| Guardrail | Where | Effect |
+|---|---|---|
+| Daily token + request budget, persisted to disk | [src/chain/quota.py](src/chain/quota.py) | LLM calls stop *before* the tier is burned; resets midnight UTC |
+| Requests-per-minute throttle | [src/chain/quota.py](src/chain/quota.py) | Stays under Groq's 30 req/min — no 429 storms |
+| Answer cache keyed on question + filters + model | [src/chain/cache.py](src/chain/cache.py) | Repeat questions cost **0 tokens** (corpus is static, temperature 0) |
+| `max_tokens` cap on every generation | [src/config.py](src/config.py) | No runaway answers |
+| Graceful degradation | [src/chain/rag_chain.py](src/chain/rag_chain.py) | Budget spent → retrieval-only excerpts + citations instead of an error |
+| Eval pre-flight check | [src/evaluation/evaluate.py](src/evaluation/evaluate.py) | Refuses a RAGAS run today's budget can't cover; suggests `make eval-subset N=…` |
+
+Live usage is shown in the Streamlit sidebar (budget meter) and served at `GET /quota`.
+
 ## RAGAS evaluation scores
 > Run `make eval` to populate. Scores are committed in `eval_results/scores.json`.
 
@@ -128,6 +144,7 @@ tests/              pytest unit + integration
 - **Groq over OpenAI for inference** — competitive quality at much lower latency/cost.
 - **Local BGE embeddings instead of an OpenAI/Cohere API** — zero recurring cost, identical vectors across runs (reproducibility), and the whole pipeline depends on a single paid API (Groq). Tradeoff: ~3-5% lower MTEB scores than `text-embedding-3-small` — acceptable for plain-English SEC prose.
 - **Groq Llama 3.3 70B as RAGAS judge** — keeps the project on a single LLM provider, but introduces a mild self-evaluation bias since the same model family generates *and* judges. Mitigation: faithfulness scores are spot-checked manually on a 5-question random sample.
+- **Quota guard + answer cache instead of hoping the free tier holds** — API quotas are a real production constraint; budgeting, throttling, caching, and graceful degradation are the same patterns you'd use against a paid bill. The system stays up (retrieval-only mode) even when the LLM budget is spent.
 
 ## Deployment
 
