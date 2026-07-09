@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Iterable
 from functools import lru_cache
+from typing import Any
 
 import polars as pl
 import tiktoken
@@ -91,12 +92,10 @@ def _existing_hashes(store: VectorStore, candidate_hashes: list[str]) -> set[str
         from langchain_chroma import Chroma
 
         if isinstance(store, Chroma):
-            col = store._collection  # type: ignore[attr-defined]
-            results = col.get(
-                where={"content_hash": {"$in": candidate_hashes}},
-                include=["metadatas"],
-            )
-            return {m.get("content_hash", "") for m in (results["metadatas"] or [])}
+            col = store._collection
+            where_filter: dict[str, Any] = {"content_hash": {"$in": candidate_hashes}}
+            results = col.get(where=where_filter, include=["metadatas"])
+            return {str(m.get("content_hash", "")) for m in (results["metadatas"] or [])}
     except Exception:
         pass
     return set()
