@@ -1,4 +1,4 @@
-"""FastAPI app: POST /query, GET /companies, GET /metrics, DELETE /session."""
+"""FastAPI app: POST /query, GET /companies, GET /metrics, GET /quota, DELETE /session."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+from src.chain.quota import get_quota_guard
 from src.chain.rag_chain import build_rag_chain, clear_session
 from src.config import EVAL_DIR
 from src.ingest.downloader import DEFAULT_TICKERS
@@ -39,6 +40,8 @@ class QueryResponse(BaseModel):
     answer: str
     sources: list[Source]
     session_id: str
+    cached: bool = False  # served from the answer cache (no Groq call)
+    degraded: bool = False  # daily budget spent — retrieval-only fallback
 
 
 @app.post("/query", response_model=QueryResponse)
@@ -49,6 +52,8 @@ def query(req: QueryRequest) -> QueryResponse:
         answer=result["answer"],
         sources=result["sources"],
         session_id=req.session_id,
+        cached=result["cached"],
+        degraded=result["degraded"],
     )
 
 
@@ -69,6 +74,12 @@ def metrics() -> dict:
     if not scores_path.exists():
         raise HTTPException(status_code=404, detail="Run evaluation first: make eval")
     return json.loads(scores_path.read_text())
+
+
+@app.get("/quota")
+def quota() -> dict:
+    """Today's Groq free-tier usage (tokens + requests, resets midnight UTC)."""
+    return dict(get_quota_guard().status())
 
 
 @app.get("/health")

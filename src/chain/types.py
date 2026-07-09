@@ -19,3 +19,5 @@ class RAGSource(TypedDict):
 class RAGAnswer(TypedDict):
     answer: str
     sources: list[RAGSource]
+    cached: bool  # served from the disk answer cache — no Groq call was made
+    degraded: bool  # daily budget exhausted — retrieval-only fallback, no LLM synthesis

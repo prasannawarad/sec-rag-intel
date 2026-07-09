@@ -29,6 +29,8 @@ htmlcov/
 # Data (real downloads + processed chunks should not be committed)
 data/raw/
 data/processed/
+data/quota_state.json
+data/cache/
 data/**/*.html
 data/**/*.htm
 data/**/*.txt

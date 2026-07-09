@@ -8,6 +8,8 @@ bias — flag this in the README and spot-check faithfulness manually.
 Groq constraints:
   - n=1 only (RAGAS default n=3 is rejected) → set via run_config
   - 100k tokens/day on free tier → use --subset N to evaluate fewer questions
+  - A pre-flight check against the shared quota guard (src/chain/quota.py)
+    refuses to start a run that would blow the daily budget; --force overrides.
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ import json
 import logging
 from pathlib import Path
 
+from src.chain.quota import get_quota_guard
 from src.chain.rag_chain import build_rag_chain
 from src.config import EVAL_DIR, get_settings
 
@@ -23,6 +26,35 @@ logger = logging.getLogger(__name__)
 
 GOLDEN_PATH = Path(__file__).parent / "golden_dataset.json"
 OUTPUT_PATH = EVAL_DIR / "scores.json"
+
+# Conservative per-question cost: ~3k tokens generation (5×512-token chunks
+# + answer) + ~4k for the 3 RAGAS judge metrics. A full 20-question run is
+# ~140k tokens — more than the whole free-tier day, hence the pre-flight check.
+EST_GENERATION_TOKENS_PER_Q = 3_000
+EST_JUDGE_TOKENS_PER_Q = 4_000
+EST_TOKENS_PER_QUESTION = EST_GENERATION_TOKENS_PER_Q + EST_JUDGE_TOKENS_PER_Q
+
+
+def _preflight_budget_check(n_questions: int, force: bool) -> None:
+    """Refuse to start a run the daily Groq budget can't cover."""
+    status = get_quota_guard().status()
+    est = n_questions * EST_TOKENS_PER_QUESTION
+    if est <= status["tokens_remaining"]:
+        return
+    affordable = status["tokens_remaining"] // EST_TOKENS_PER_QUESTION
+    msg = (
+        f"Evaluating {n_questions} questions needs ~{est:,} Groq tokens but only "
+        f"{status['tokens_remaining']:,} remain in today's free-tier budget. "
+        + (
+            f"Try: make eval-subset N={affordable}"
+            if affordable
+            else "Try again after midnight UTC."
+        )
+    )
+    if force:
+        logger.warning("%s — continuing anyway (--force)", msg)
+        return
+    raise SystemExit(f"{msg}  (Override with --force.)")
 
 
 def load_golden(subset: int | None = None) -> list[dict]:
@@ -46,8 +78,11 @@ def run_predictions(questions: list[dict]) -> list[dict]:
         docs = retriever.invoke(q["question"])
         contexts = [d.page_content for d in docs]
 
-        chain = build_rag_chain(ticker=ticker, year=year, filing_type=filing_type)
-        out = chain.invoke(q["question"])
+        # use_cache=False: eval must measure fresh generations, not cached ones.
+        # Unique session per question: sharing one session would grow the chat
+        # history every question — wrong context AND ever-increasing token burn.
+        chain = build_rag_chain(ticker=ticker, year=year, filing_type=filing_type, use_cache=False)
+        out = chain.invoke({"question": q["question"], "session_id": f"eval-{q['id']}"})
 
         results.append(
             {
@@ -113,11 +148,12 @@ def _extract_scores(result) -> dict:
         return {}
 
 
-def evaluate(subset: int | None = None) -> dict:
+def evaluate(subset: int | None = None, force: bool = False) -> dict:
     """Run RAGAS metrics: faithfulness, answer_relevancy, context_recall.
 
     Args:
         subset: If given, evaluate only the first N questions (saves Groq tokens).
+        force: Skip the pre-flight budget check (run anyway, risking 429s).
     """
     from datasets import Dataset
     from ragas import RunConfig
@@ -125,6 +161,7 @@ def evaluate(subset: int | None = None) -> dict:
     from ragas.metrics.collections import answer_relevancy, context_recall, faithfulness
 
     questions = load_golden(subset=subset)
+    _preflight_budget_check(len(questions), force=force)
     logger.info("Evaluating %d questions", len(questions))
     preds = run_predictions(questions)
 
@@ -136,7 +173,7 @@ def evaluate(subset: int | None = None) -> dict:
 
     result = ragas_evaluate(
         ds,
-        metrics=[faithfulness, answer_relevancy, context_recall],
+        metrics=[faithfulness, answer_relevancy, context_recall],  # type: ignore[list-item]
         llm=judge_llm,
         embeddings=judge_emb,
         run_config=run_cfg,
@@ -146,6 +183,10 @@ def evaluate(subset: int | None = None) -> dict:
     EVAL_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(scores, indent=2))
     logger.info("Saved RAGAS scores to %s: %s", OUTPUT_PATH, scores)
+
+    # RAGAS calls the judge internally, so its usage bypasses the guard —
+    # book an estimate so the shared daily budget stays honest.
+    get_quota_guard().record(len(questions) * EST_JUDGE_TOKENS_PER_Q, 0)
     return scores
 
 
@@ -154,5 +195,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--subset", type=int, default=None, help="Evaluate first N questions only")
+    parser.add_argument(
+        "--force", action="store_true", help="Skip the pre-flight Groq budget check"
+    )
     args = parser.parse_args()
-    print(json.dumps(evaluate(subset=args.subset), indent=2))
+    print(json.dumps(evaluate(subset=args.subset, force=args.force), indent=2))

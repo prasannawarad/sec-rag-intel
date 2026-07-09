@@ -26,6 +26,20 @@ class Settings(BaseSettings):
     # LLM
     groq_api_key: str = ""
     llm_model: str = "llama-3.3-70b-versatile"
+    llm_max_tokens: int = 1024  # cap answer length — uncapped answers drain the free tier
+
+    # Groq free-tier guardrails (llama-3.3-70b-versatile free tier:
+    # 30 req/min, 1k req/day, 100k tokens/day). Budgets sit below the real
+    # limits so a miscount never hard-blocks the account.
+    groq_rpm_limit: int = 25
+    groq_daily_request_budget: int = 900
+    groq_daily_token_budget: int = 90_000
+    quota_state_path: str = str(DATA_DIR / "quota_state.json")
+
+    # Answer cache — repeat questions are served from disk, costing 0 tokens
+    answer_cache_enabled: bool = True
+    answer_cache_path: str = str(DATA_DIR / "cache" / "answers.json")
+    answer_cache_max_entries: int = 500
 
     # Vector store
     vector_store_mode: Literal["local", "pinecone"] = "local"
