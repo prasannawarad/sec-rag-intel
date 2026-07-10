@@ -14,9 +14,16 @@ pinned: false
 > Production-grade RAG system that lets analysts query 10-K / 10-Q SEC filings in
 > natural language and receive grounded, cited answers.
 
-[![Live on HF Spaces](https://img.shields.io/badge/demo-HuggingFace_Spaces-yellow)](#deployment)
+[![Deploys to HF Spaces](https://img.shields.io/badge/deploy-HuggingFace_Spaces-yellow)](#deployment)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
+![SEC Filing Intelligence — home](docs/screenshots/home.png)
+
+*A grounded, cited answer — served from the answer cache at zero token cost, with the
+free-tier budget meter live in the sidebar:*
+
+![Answered query with citations and cache badge](docs/screenshots/answer.png)
 
 ---
 
@@ -148,8 +155,10 @@ tests/              pytest unit + integration
 
 ## Deployment
 
-Deployed to [HuggingFace Spaces](https://huggingface.co/spaces/prasannawarad/sec-rag-intel) (Streamlit SDK).  
-The live demo uses **Pinecone** as the vector store so the index persists across Space restarts.
+Deploys to [HuggingFace Spaces](https://huggingface.co/spaces/prasannawarad/sec-rag-intel)
+(Streamlit SDK) via GitHub Actions — the sync workflow activates once the `HF_TOKEN`
+repo secret is set (step 4 below) and skips safely until then.
+The hosted demo uses **Pinecone** as the vector store so the index persists across Space restarts.
 
 ### One-time setup
 
