@@ -16,7 +16,6 @@ The script:
 from __future__ import annotations
 
 import logging
-import os
 
 import polars as pl
 
@@ -30,11 +29,11 @@ CHUNKS_GLOB = "data/processed/chunks/**/*.parquet"
 EMBEDDING_DIM = 384  # bge-small-en-v1.5
 
 
-def _ensure_pinecone_index(index_name: str) -> None:
+def _ensure_pinecone_index(index_name: str, api_key: str) -> None:
     """Create the Pinecone serverless index if it does not already exist."""
     from pinecone import Pinecone, ServerlessSpec
 
-    pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+    pc = Pinecone(api_key=api_key)
     existing = [idx.name for idx in pc.list_indexes()]
     if index_name in existing:
         logger.info("Pinecone index '%s' already exists", index_name)
@@ -61,7 +60,10 @@ def main() -> None:
             "Set VECTOR_STORE_MODE=pinecone (in .env or env var) before running this script."
         )
 
-    _ensure_pinecone_index(settings.pinecone_index_name)
+    if not settings.pinecone_api_key:
+        raise RuntimeError("PINECONE_API_KEY is not set (in .env or env var).")
+
+    _ensure_pinecone_index(settings.pinecone_index_name, settings.pinecone_api_key)
 
     # Warm the embedding model (one-time 130MB load)
     get_embeddings()

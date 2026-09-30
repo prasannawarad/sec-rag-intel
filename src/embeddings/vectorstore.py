@@ -56,6 +56,7 @@ def get_vectorstore() -> VectorStore:
         return PineconeVectorStore(
             index_name=settings.pinecone_index_name,
             embedding=embeddings,
+            pinecone_api_key=settings.pinecone_api_key,
         )
 
     from langchain_chroma import Chroma
