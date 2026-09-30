@@ -25,12 +25,14 @@ class Settings(BaseSettings):
 
     # LLM
     groq_api_key: str = ""
-    llm_model: str = "llama-3.3-70b-versatile"
+    # Groq retired llama-3.3-70b-versatile (Sept 2026). The generator and the RAGAS
+    # judge are deliberately different model families — no self-evaluation bias.
+    llm_model: str = "qwen/qwen3.8-27b"
+    judge_model: str = "openai/gpt-oss-120b"
     llm_max_tokens: int = 1024  # cap answer length — uncapped answers drain the free tier
 
-    # Groq free-tier guardrails (llama-3.3-70b-versatile free tier:
-    # 30 req/min, 1k req/day, 100k tokens/day). Budgets sit below the real
-    # limits so a miscount never hard-blocks the account.
+    # Groq free-tier guardrails. Budgets sit below the real per-model limits
+    # (console.groq.com/settings/limits) so a miscount never hard-blocks the account.
     groq_rpm_limit: int = 25
     groq_daily_request_budget: int = 900
     groq_daily_token_budget: int = 90_000

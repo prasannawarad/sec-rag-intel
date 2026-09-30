@@ -14,6 +14,9 @@ Accounting is exact where possible (usage_metadata from the Groq response)
 and conservative where not (pre-flight estimates use ~4 chars/token).
 State resets at midnight UTC, matching Groq's daily quota window.
 
+Groq's free-tier limits are per model, so each model gets its own guard and
+state file: the app's generator and the RAGAS judge don't drain each other.
+
 Known limitation (fine for a single-instance demo): concurrent processes
 share the state file with last-writer-wins semantics, so parallel API +
 Streamlit usage can undercount slightly — the budget headroom in
@@ -25,6 +28,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import tempfile
 import threading
 import time
@@ -172,11 +176,18 @@ class QuotaGuard:
         )
 
 
-@lru_cache(maxsize=1)
-def get_quota_guard() -> QuotaGuard:
+def get_quota_guard(model: str | None = None) -> QuotaGuard:
+    """The guard for one Groq model (default: the app's generator, settings.llm_model)."""
+    return _guard_for(model or get_settings().llm_model)
+
+
+@lru_cache(maxsize=4)
+def _guard_for(model: str) -> QuotaGuard:
     settings = get_settings()
+    base = Path(settings.quota_state_path)
+    slug = re.sub(r"[^A-Za-z0-9.-]+", "_", model)
     return QuotaGuard(
-        Path(settings.quota_state_path),
+        base.with_name(f"{base.stem}.{slug}{base.suffix}"),
         daily_token_budget=settings.groq_daily_token_budget,
         daily_request_budget=settings.groq_daily_request_budget,
         rpm_limit=settings.groq_rpm_limit,

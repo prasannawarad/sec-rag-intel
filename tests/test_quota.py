@@ -108,3 +108,22 @@ def test_corrupt_state_file_resets_cleanly(tmp_path):
 def test_estimate_tokens_is_conservative_and_positive():
     assert estimate_tokens("") == 1
     assert estimate_tokens("word " * 100) == pytest.approx(125, abs=5)
+
+
+def test_each_model_gets_its_own_budget(tmp_path, monkeypatch):
+    """Groq limits are per model: judge usage must not drain the generator's budget."""
+    from src.chain import quota
+    from src.config import get_settings
+
+    monkeypatch.setenv("QUOTA_STATE_PATH", str(tmp_path / "quota_state.json"))
+    get_settings.cache_clear()
+    quota._guard_for.cache_clear()
+    try:
+        s = get_settings()
+        quota.get_quota_guard(s.judge_model).record(5_000, 0)
+        assert quota.get_quota_guard(s.judge_model).status()["tokens_used"] == 5_000
+        assert quota.get_quota_guard().status()["tokens_used"] == 0  # default = generator
+        assert quota.get_quota_guard() is quota.get_quota_guard(s.llm_model)
+    finally:
+        get_settings.cache_clear()
+        quota._guard_for.cache_clear()

@@ -8,8 +8,8 @@ Groq free-tier protection (see quota.py / cache.py):
   1. First-turn answers are served from a disk cache when possible (0 tokens).
   2. Every LLM call is pre-checked against a persisted daily token/request
      budget and throttled to stay under the requests-per-minute limit.
-  3. When the daily budget is spent, the chain degrades gracefully to a
-     retrieval-only answer (top excerpts + sources) instead of erroring.
+  3. When the daily budget is spent — or Groq itself fails — the chain degrades
+     gracefully to a retrieval-only answer (top excerpts + sources) instead of erroring.
 
 Public API:
   build_rag_chain(ticker, year, filing_type, use_cache) -> Runnable
@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 
+from groq import APIError as GroqAPIError
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableLambda
@@ -182,6 +183,11 @@ def build_rag_chain(
         except QuotaExceededError as exc:
             logger.warning("Groq quota guard tripped: %s", exc)
             return _degraded_answer(docs, str(exc))
+        except GroqAPIError as exc:
+            # Groq-side failures (real 429s past our throttle, retired model,
+            # outage) get the same retrieval-only fallback instead of a crash.
+            logger.error("Groq call failed: %s", exc)
+            return _degraded_answer(docs, "The language model is temporarily unavailable.")
 
         answer = str(msg.content)
         usage = getattr(msg, "usage_metadata", None) or {}
