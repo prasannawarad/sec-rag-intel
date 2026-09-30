@@ -15,7 +15,7 @@
     {
       "id": "q02",
       "question": "How does Microsoft describe its cloud revenue growth drivers?",
-      "ground_truth": "Microsoft does not explicitly describe its cloud revenue growth drivers in the provided excerpts. The excerpts discuss the company's gaming business, Xbox, and various risk factors, but do not specifically address the drivers of cloud revenue growth. They do mention the growth of cloud-based offerings and the storage and processing of personal data in a cloud-based environment, but do not provide details on the drivers of cloud revenue growth.",
+      "ground_truth": "Microsoft says its cloud revenue growth is driven primarily by strong demand for Azure and other cloud services, which together grew 34% year‑over‑year, and by expanding consumption of its cloud‑based AI offerings. The growth reflects broader customer adoption of its portfolio of cloud and AI services across public, private and hybrid environments.",
       "filters": {
         "ticker": "MSFT",
         "filing_type": "10-K"
@@ -25,7 +25,7 @@
     {
       "id": "q03",
       "question": "Compare the R&D spending of Apple and Microsoft for the most recent fiscal year.",
-      "ground_truth": "According to the excerpts, Apple's research and development (R&D) expense for 2025 was $34,550 million. The excerpts do not provide Microsoft's R&D spending for the most recent fiscal year. Therefore, a direct comparison between the two companies' R&D spending cannot be made based on the provided information.",
+      "ground_truth": "Apple reported research and development expenses of $34.55 billion for its most recent fiscal year, while Microsoft reported research and development expenses of $32.49 billion for the same period. Apple’s R&D spend was therefore about $2.06 billion higher than Microsoft’s.",
       "filters": {},
       "type": "comparative"
     },
@@ -72,7 +72,7 @@
     {
       "id": "q08",
       "question": "Has Meta disclosed any material litigation related to user privacy?",
-      "ground_truth": "Meta has disclosed litigation, including class action lawsuits, as a risk factor, but it has not specifically disclosed any material litigation related to user privacy in the provided excerpts. However, it has mentioned government investigations, enforcement actions, and settlements, including litigation and investigations by privacy authorities.",
+      "ground_truth": "Yes. Meta disclosed that it is subject to an ongoing FTC administrative proceeding alleging deficient compliance with the Children’s Online Privacy Protection Act and other privacy‑related violations, which it is challenging in federal court. The company also noted that it must notify the EU’s lead privacy regulator (the IDPC) and other authorities of personal‑data breaches and that it remains under investigation by the IDPC and other regulators for compliance with the GDPR and related privacy laws.",
       "filters": {
         "ticker": "META",
         "filing_type": "10-K"
@@ -82,7 +82,7 @@
     {
       "id": "q09",
       "question": "What does Alphabet say about ad revenue concentration risk?",
-      "ground_truth": "Alphabet generates more than 70% of its total revenues from online advertising. The company notes that reduced spending by advertisers, loss of partners, shifts in online advertising, and new technologies that block ads could harm its business. Additionally, expenditures by advertisers tend to correlate with overall economic conditions, and adverse macroeconomic conditions could affect demand for advertising, resulting in fluctuations in ad spend. Alphabet's advertisers can also terminate their contracts at any time if the company does not create sufficient value for them.",
+      "ground_truth": "Alphabet notes that more than 70% of its total revenue in 2025 came from online advertising, indicating a high concentration of its earnings in the advertising business and exposing the company to risks if advertising spending declines.",
       "filters": {
         "ticker": "GOOGL",
         "filing_type": "10-K"
@@ -92,7 +92,7 @@
     {
       "id": "q10",
       "question": "Which companies in the dataset call out generative AI as a material risk factor?",
-      "ground_truth": "Based on the provided excerpts, the companies that mention AI or generative AI as a risk factor are: \n\n* MSFT (Microsoft) mentions the need to continuously engineer more secure products and services, and enhance security, threat detection, and reliability features, as well as the development of mitigation technologies to secure customers from attacks.\n* GOOGL (Google) mentions that AI is quickly reshaping the advertising industry and that they must adapt effectively to meet this shift.\n* TSLA (Tesla) mentions the need to further advance their capabilities in AI to be successful.\n* NVDA (NVIDIA) mentions issues relating to the responsible use of their technologies, including AI, which may result in reputational or financial harm and liability.\n\nHowever, none of the companies explicitly mention \"generative AI\" as a material risk factor. They mention AI in general as a factor that could impact their business.",
+      "ground_truth": "Five of the eight companies discuss generative AI in their Risk Factors: Microsoft (infusing generative AI into consumer and commercial offerings in a highly competitive AI market), Alphabet (developing frontier generative AI models), JPMorgan Chase (risk of losing clients and market share if it does not keep pace with technological advances including generative AI), NVIDIA (regulations such as the EU AI Act restricting systems used to develop foundation models and generative AI), and Meta (significant investments in AI initiatives including generative AI and superintelligence). Apple, Amazon and Tesla do not mention generative AI in their Risk Factors.",
       "filters": {},
       "type": "multi_hop"
     },
@@ -115,7 +115,7 @@
     {
       "id": "q13",
       "question": "What is Microsoft's approach to AI safety as described in its filings?",
-      "ground_truth": "Microsoft's approach to AI safety is not explicitly described in the provided excerpts from its SEC filings. The excerpts primarily discuss the company's approach to security, data protection, and risk management, but do not mention AI safety specifically.",
+      "ground_truth": "Microsoft says it is building AI into many of its products and services while managing safety through a combination of governance, responsible‑AI policies, and human oversight.  It acknowledges that AI models may contain flaws, biased or harmful data, and that outputs could be offensive, illegal or inaccurate, so it requires human review of certain inputs and outputs, especially for autonomous (“agentic”) systems.  The company also commits to complying with evolving global regulations, addressing data‑privacy and intellectual‑property risks, and mitigating reputational, legal and competitive impacts through its responsible‑AI framework and ongoing risk‑management processes.",
       "filters": {
         "ticker": "MSFT"
       },
@@ -131,7 +131,7 @@
     {
       "id": "q15",
       "question": "What climate-related risks does Amazon report?",
-      "ground_truth": "Amazon reports that its business may be affected by extreme weather, including as a result of climate change, which can impact demand for its products and services. Additionally, the company's international operations and supply chain may be exposed to climate-related risks, although specific details are not provided in the excerpts.",
+      "ground_truth": "Amazon reports that climate‑related risks include more frequent and severe extreme‑weather events and other natural or human‑caused disasters that can disrupt its fulfillment network, data centers, shipping and website operations; higher operating and compliance costs from rising temperatures, water scarcity and the transition to a low‑carbon economy; potential declines in demand for its products and services as customer behavior changes; and reputational damage from perceptions of its environmental impact. These risks could lead to increased costs, inventory and shipping inefficiencies, system interruptions and material harm to its business.",
       "filters": {
         "ticker": "AMZN"
       },
@@ -140,14 +140,14 @@
     {
       "id": "q16",
       "question": "Which tech companies disclose exposure to China-related regulatory risk?",
-      "ground_truth": "Based on the provided excerpts, Apple Inc. (AAPL) discloses exposure to China-related regulatory risk, as it mentions that a significant majority of its manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, and that restrictions on international trade, such as tariffs, can materially adversely affect its business and supply chain, particularly in countries and regions where it derives a significant portion of its revenues.",
+      "ground_truth": "Six companies disclose China-related regulatory or trade-policy risk: Apple (new U.S. tariffs on imports from China, among others), Microsoft (competition-law enforcement in markets including China), Amazon (the PRC regulates its operations through regulations and license requirements that may restrict foreign investment), Tesla (conforming products to regulatory requirements given its manufacturing operations in China), NVIDIA (its offerings in China are limited by export controls), and Meta (tariffs and trade policies by the United States, China and other governments affecting advertiser spending). Alphabet's Risk Factors do not specifically discuss China.",
       "filters": {},
       "type": "multi_hop"
     },
     {
       "id": "q17",
       "question": "What is JPMorgan's tier 1 capital ratio?",
-      "ground_truth": "JPMorgan's Tier 1 capital ratio is 15.5% (Standardized) and 16.8% (as of the previous year), with the current year's Advanced Tier 1 capital ratio being 15.0% and 16.9% for Standardized and Advanced approaches, respectively, as of December 31, 2025.",
+      "ground_truth": "As of December 31, 2025, JPMorgan Chase's Tier 1 capital ratio was 15.5% under the Standardized approach and 15.0% under the Advanced approach, down from 16.8% and 16.9% respectively at December 31, 2024. The regulatory requirement for both approaches was 13.0%.",
       "filters": {
         "ticker": "JPM"
       },
@@ -172,7 +172,7 @@
     {
       "id": "q20",
       "question": "Summarise Alphabet's other-bets segment performance.",
-      "ground_truth": "Alphabet's Other Bets segment includes businesses such as Waymo, a fully autonomous driving technology company that provides paid ride-hailing services to customers in multiple cities, and Isomorphic Labs, which applies AI to accelerate the development of new medicines. The segment is part of Alphabet's structure, which aims to help each business prosper through strong leaders and independence. However, the excerpts do not provide specific financial performance details for the Other Bets segment.",
+      "ground_truth": "Alphabet’s Other Bets segment posted an operating loss of $4.44 billion in 2024, which widened to $7.52 billion in 2025—a deterioration of about $3.1 billion year‑over‑year. The larger loss was driven primarily by higher employee compensation expenses, including a valuation‑based charge related to Waymo. No specific revenue figures for Other Bets are provided in the excerpts.",
       "filters": {
         "ticker": "GOOGL"
       },

@@ -78,9 +78,10 @@ QUESTION_META: dict[str, dict] = {
         "keywords": ["advertising", "advertisers"],
     },
     "q10": {
-        "tickers": ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "NVDA", "META"],
+        "tickers": ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "JPM", "NVDA", "META"],
         "item_codes": ["Item 1A"],
-        "keywords": ["generative AI", "artificial intelligence", "gen AI", "AI"],
+        # Only the specific phrase: a bare "AI" outranks it and the reference misses companies.
+        "keywords": ["generative AI", "gen AI", "GenAI"],
     },
     "q11": {
         "tickers": ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "JPM", "NVDA", "META"],
@@ -108,7 +109,7 @@ QUESTION_META: dict[str, dict] = {
         "keywords": ["climate", "weather", "environmental"],
     },
     "q16": {
-        "tickers": ["AAPL", "MSFT", "GOOGL", "META", "NVDA"],
+        "tickers": ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"],
         "item_codes": ["Item 1A"],
         "keywords": ["China", "Chinese", "PRC"],
     },
