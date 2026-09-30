@@ -11,7 +11,7 @@ help:
 	@echo "make index            — full pipeline: download → parse → chunk → embed (Chroma)"
 	@echo "make index-pinecone   — embed all chunks into Pinecone (prod, needs PINECONE_API_KEY)"
 	@echo "make eval             — run RAGAS evaluation (20 questions)"
-	@echo "make eval-subset N=5  — run RAGAS on first N questions (saves Groq tokens)"
+	@echo "make eval-subset N=5 [OFFSET=0] — run RAGAS on N questions (saves Groq tokens)"
 	@echo "make api              — run FastAPI dev server"
 	@echo "make ui               — run Streamlit app"
 	@echo "make clean            — remove caches and processed data"
@@ -49,7 +49,7 @@ eval:
 	python -m src.evaluation.evaluate
 
 eval-subset:
-	python -m src.evaluation.evaluate --subset $(N)
+	python -m src.evaluation.evaluate --subset $(N) --offset $(or $(OFFSET),0)
 
 api:
 	uvicorn src.api.main:app --reload --port 8000
