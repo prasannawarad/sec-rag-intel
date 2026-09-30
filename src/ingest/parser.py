@@ -29,6 +29,7 @@ SECTION_LABELS: dict[str, str] = {
     "Item 1": "Business",
     "Item 1A": "Risk Factors",
     "Item 1B": "Unresolved Staff Comments",
+    "Item 1C": "Cybersecurity",  # mandatory since FY2023
     "Item 2": "Properties",
     "Item 3": "Legal Proceedings",
     "Item 5": "Market for Registrant's Common Equity",
@@ -41,6 +42,12 @@ SECTION_LABELS: dict[str, str] = {
 }
 
 
+# Pseudo item code for a wrapper 10-K's embedded annual report (see _split_by_items).
+ANNUAL_REPORT = "Annual Report"
+# An Item 7 shorter than this is a cross-reference stub, not a real MD&A.
+_WRAPPER_STUB_CHARS = 2_000
+
+
 @dataclass(frozen=True)
 class Section:
     item_code: str
@@ -50,9 +57,9 @@ class Section:
 
 # A heading line: "Item NN[A]" optionally followed by a period and a short
 # section label on the same line. Anchored to start/end so we ignore in-prose
-# mentions like "see Item 1A" buried inside MD&A. Both TOC stubs ("Item 1A.")
-# and real headings ("Item 1A. Risk Factors") match — the longest-occurrence
-# rule below picks the actual section body.
+# mentions like "see Item 1A" buried inside MD&A. TOC stubs ("Item 1A."), real
+# headings ("Item 1A. Risk Factors") and running page headers all match —
+# _split_by_items sorts out which is which.
 _ITEM_HEADING_LINE_RE = re.compile(
     r"^\s*(?:ITEM|Item)\s+(\d{1,2}[A-Z]?)\.?(?:\s+[A-Za-z][^\n]{0,120})?\s*$",
     re.MULTILINE,
@@ -62,6 +69,10 @@ _WHITESPACE_RE = re.compile(r"[ \t]+")
 # Common unicode spaces that show up in inline-XBRL: NBSP, thin space, en/em quad,
 # narrow no-break space, etc. Normalise them all to plain space.
 _UNICODE_SPACES = "       　"
+
+
+# Running page footers, e.g. "Apple Inc. | 2025 Form 10-K | 12" — pure noise for retrieval.
+_PAGE_FOOTER_RE = re.compile(r"^.{0,80}\|\s*(?:19|20)\d{2}\s+Form\s+10-[KQ]\s*\|\s*\d+$")
 
 
 def html_to_text(html: str) -> str:
@@ -76,30 +87,36 @@ def html_to_text(html: str) -> str:
     # Collapse intra-line whitespace but preserve line breaks so headings stay
     # detectable as their own lines.
     lines = [_WHITESPACE_RE.sub(" ", ln).strip() for ln in text.split("\n")]
-    return "\n".join(ln for ln in lines if ln).strip()
+    return "\n".join(ln for ln in lines if ln and not _PAGE_FOOTER_RE.match(ln)).strip()
 
 
 def _split_by_items(text: str) -> list[Section]:
     """Slice the document at Item headings that appear on their own line.
 
-    For each item code, keep only the LONGEST occurrence — modern filings
-    repeat headings (TOC entry + actual section), and the real section is
-    always the longer one.
+    Every Item heading is a boundary, even ones we don't keep (Item 4, 6,
+    10–16) — otherwise their text (e.g. the exhibit index) is swallowed by
+    the preceding kept section. Consecutive headings for the same item are
+    running page headers (MSFT repeats "Item 8" on ~40 pages), so they're
+    collapsed into one section. Of the remaining occurrences per item code
+    (TOC entry vs. actual section) the LONGEST is kept.
     """
     candidates: list[tuple[int, str]] = []
     for m in _ITEM_HEADING_LINE_RE.finditer(text):
         item_code = f"Item {m.group(1)}"
-        if item_code in SECTION_LABELS:
-            candidates.append((m.start(), item_code))
+        if candidates and candidates[-1][1] == item_code:
+            continue  # running page header — still inside the same section
+        candidates.append((m.start(), item_code))
 
     sections: list[Section] = []
     for i, (start, item_code) in enumerate(candidates):
+        if item_code not in SECTION_LABELS:
+            continue  # boundary only (Part III/IV, reserved items)
         end = candidates[i + 1][0] if i + 1 < len(candidates) else len(text)
         body = text[start:end].strip()
         if len(body) < 500:
             continue  # TOC stub; not a real section
-        # Drop the heading line itself so it doesn't dominate the chunk.
-        body = _ITEM_HEADING_LINE_RE.sub("", body, count=1).lstrip(" .:-\n").strip()
+        # Drop heading lines (incl. running page headers) so they don't pollute chunks.
+        body = _ITEM_HEADING_LINE_RE.sub("", body).lstrip(" .:-\n").strip()
         if not body:
             continue
         sections.append(
@@ -114,6 +131,18 @@ def _split_by_items(text: str) -> list[Section]:
     for s in sections:
         if s.item_code not in by_item or len(s.text) > len(by_item[s.item_code].text):
             by_item[s.item_code] = s
+
+    mdna = by_item.get("Item 7")
+    has_mdna_heading = any(code == "Item 7" for _, code in candidates)
+    if has_mdna_heading and (mdna is None or len(mdna.text) < _WRAPPER_STUB_CHARS):
+        # 10-K "wrapper" (e.g. JPM): Items 7/8 only cross-reference an annual
+        # report that is included in the filing *outside* the Item structure —
+        # before the first heading and after the last. Keep it, or the filing's
+        # MD&A and financial statements are lost.
+        outside = [text[: candidates[0][0]].strip(), text[candidates[-1][0] :].strip()]
+        body = "\n\n".join(part for part in outside if len(part) >= 500)
+        if body:
+            by_item[ANNUAL_REPORT] = Section(ANNUAL_REPORT, ANNUAL_REPORT, body)
     return list(by_item.values())
 
 

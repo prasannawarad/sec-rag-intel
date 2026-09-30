@@ -55,7 +55,9 @@ class Settings(BaseSettings):
     sec_user_agent: str = "sec-rag-intel example@example.com"
 
     # Chunking + retrieval
-    chunk_size: int = 512
+    # Measured in the embedding model's own tokens: bge-small embeds at most 512
+    # (incl. [CLS]/[SEP]) and silently truncates the rest, so chunks stay under it.
+    chunk_size: int = 480
     chunk_overlap: int = 50
     retriever_k: int = 5
     retriever_fetch_k: int = 20

@@ -76,3 +76,52 @@ def test_split_by_items_skips_unknown_item_codes():
     codes = [s.item_code for s in sections]
     assert "Item 99" not in codes
     assert "Item 1A" in codes
+
+
+def test_split_by_items_unknown_item_is_a_boundary():
+    """Text under an unkept item (e.g. Item 15 exhibits) must not leak into the
+    preceding kept section."""
+    text = (
+        "Item 9B. Other Information\n"
+        + ("other info content. " * 50)
+        + "\nItem 15. Exhibits\n"
+        + ("exhibit index row. " * 200)
+        + "\n"
+    )
+    [section] = _split_by_items(text)
+    assert section.item_code == "Item 9B"
+    assert "exhibit index" not in section.text
+
+
+def test_split_by_items_merges_running_page_headers():
+    """Filings that repeat "Item 7" at the top of every page must yield the whole
+    section, not just its longest page."""
+    pages = [f"page {i} discussion. " * 40 for i in range(5)]
+    text = "Item 7. Management's Discussion and Analysis\n" + "\nItem 7\n".join(pages)
+    [section] = _split_by_items(text)
+    assert all(f"page {i} discussion" in section.text for i in range(5))
+    assert "Item 7" not in section.text
+
+
+def test_html_to_text_strips_page_footers():
+    html = "<p>Real content.</p><p>Apple Inc. | 2025 Form 10-K | 12</p><p>More.</p>"
+    text = html_to_text(html)
+    assert "Form 10-K | 12" not in text
+    assert "Real content." in text
+
+
+def test_split_by_items_keeps_wrapper_annual_report():
+    """JPM-style 10-Ks cross-reference an annual report included outside the
+    Item structure; that text must survive as its own section."""
+    text = (
+        "Item 1A. Risk Factors\n"
+        + ("risk content. " * 100)
+        + "\nItem 7. Management's Discussion and Analysis\n"
+        + "See pages 50-160 of the Annual Report.\n"
+        + ("padding line. " * 40)
+        + "\nItem 15. Exhibits\n"
+        + ("Tier 1 capital ratio was 15.7%. " * 100)
+    )
+    codes = {s.item_code: s for s in _split_by_items(text)}
+    assert "Annual Report" in codes
+    assert "Tier 1 capital ratio" in codes["Annual Report"].text

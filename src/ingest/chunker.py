@@ -4,7 +4,7 @@ Pipeline:
   full-submission.txt -> parse_filing -> list[Section]
                                               |
                                               v
-                  RecursiveCharacterTextSplitter (512 / 50)
+       RecursiveCharacterTextSplitter (480 / 50 BGE tokens, drop fragments)
                                               |
                                               v
             Parquet at data/processed/chunks/ticker=X/fiscal_year=Y/
@@ -25,13 +25,15 @@ from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 import polars as pl
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter, TextSplitter
 
 from src.config import PROCESSED_DIR, get_settings
 from src.ingest.parser import Section, parse_filing
+from src.ingest.quality import MIN_CHUNK_SIZE
 from src.ingest.sgml import parse_header
 
 logger = logging.getLogger(__name__)
@@ -58,13 +60,24 @@ class Chunk:
     metadata: dict[str, str | int]
 
 
-def _splitter() -> RecursiveCharacterTextSplitter:
+@lru_cache(maxsize=1)
+def _splitter() -> TextSplitter:
+    """Split by the embedding model's tokenizer, not characters — chunk_size is a
+    token budget, and only the embedder's own tokenizer knows what it will truncate."""
+    from transformers import AutoTokenizer
+
     settings = get_settings()
-    return RecursiveCharacterTextSplitter(
+    return RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
+        AutoTokenizer.from_pretrained(settings.embedding_model_name),
         chunk_size=settings.chunk_size,
         chunk_overlap=settings.chunk_overlap,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
+
+
+def _split(text: str) -> list[str]:
+    """Split, dropping fragments (orphan headings) too short to answer anything."""
+    return [p for p in _splitter().split_text(text) if len(p) >= MIN_CHUNK_SIZE]
 
 
 def _hash(text: str) -> str:
@@ -80,7 +93,7 @@ def chunk_text(
     section: str = "full",
 ) -> list[Chunk]:
     """Backwards-compatible helper: chunk a raw string with flat metadata."""
-    pieces = _splitter().split_text(text)
+    pieces = _split(text)
     return [
         Chunk(
             text=piece,
@@ -105,10 +118,9 @@ def chunk_sections(
     filing_type: str,
 ) -> pl.DataFrame:
     """Split each section into chunks and return one DataFrame for the filing."""
-    splitter = _splitter()
     rows: list[dict] = []
     for s in sections:
-        for i, piece in enumerate(splitter.split_text(s.text)):
+        for i, piece in enumerate(_split(s.text)):
             chunk_id = f"{accession_number}::{s.item_code.replace(' ', '')}::{i:04d}"
             rows.append(
                 {
