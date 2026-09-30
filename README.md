@@ -44,7 +44,7 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
                               BeautifulSoup parser
                                         │
                           RecursiveCharacterTextSplitter
-                              (512 tok, 50 overlap)
+                              (480 BGE tok, 50 overlap)
                                         │
                   Local BAAI/bge-small-en-v1.5
                   (sentence-transformers, no API key)
@@ -56,7 +56,7 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
                                         │
                           LangChain LCEL chain
                                         │
-                       Groq llama-3.3-70b-versatile
+                       Groq qwen3.8-27b (judge: gpt-oss-120b)
                                         │
                   Answer + Source attribution (JSON)
                           │              │
@@ -68,11 +68,11 @@ SEC EDGAR ──► sec-edgar-downloader ──► HTML
 |---|---|
 | Data | SEC EDGAR (free) via `sec-edgar-downloader` |
 | Parsing | BeautifulSoup (lxml) |
-| Chunking | LangChain `RecursiveCharacterTextSplitter` |
+| Chunking | LangChain `RecursiveCharacterTextSplitter`, sized by the BGE tokenizer |
 | Embeddings | Local `BAAI/bge-small-en-v1.5` (sentence-transformers, zero API cost) |
 | Vector store | ChromaDB (local) / Pinecone (prod) — toggled via `VECTOR_STORE_MODE` |
 | Retrieval | MMR with metadata filters |
-| LLM | Groq `llama-3.3-70b-versatile` |
+| LLM | Groq `qwen/qwen3.8-27b` (RAGAS judge: `openai/gpt-oss-120b`) |
 | Orchestration | LangChain LCEL |
 | Evaluation | RAGAS (`faithfulness`, `answer_relevancy`, `context_recall`) |
 | API | FastAPI |
@@ -101,8 +101,8 @@ make eval     # writes eval_results/scores.json
 
 ## Free-tier guardrails (cost engineering)
 
-The whole stack runs on free tiers, so Groq's daily quota (~100k tokens/day on
-`llama-3.3-70b-versatile`) is treated as a production constraint, not an afterthought:
+The whole stack runs on free tiers, so Groq's daily token quota is treated as a
+production constraint, not an afterthought:
 
 | Guardrail | Where | Effect |
 |---|---|---|

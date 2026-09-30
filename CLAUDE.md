@@ -24,7 +24,7 @@ make ingest           # download SEC filings
 make index            # full pipeline: download → parse → chunk → embed (Chroma)
 make index-pinecone   # embed all chunks into Pinecone (needs PINECONE_API_KEY)
 make eval             # RAGAS evaluation over all 20 golden questions
-make eval-subset N=5  # RAGAS on first N questions (saves Groq tokens)
+make eval-subset N=5 OFFSET=0  # RAGAS on N questions from OFFSET (saves Groq tokens)
 make api              # FastAPI dev server
 make ui               # Streamlit app
 make clean            # ⚠ also deletes data/processed/ and chroma_db/ — re-run make index after
@@ -61,16 +61,30 @@ scripts/                   ← build_index.py, index_pinecone.py, gen_ground_tru
   Loaded as a singleton (~130 MB, once per process). `EMBEDDING_DEVICE=mps` on Apple
   Silicon gives ~2–3× speedup. The same model runs in dev and on HF Spaces.
   (An earlier design used OpenAI `text-embedding-3-small` — that is gone.)
-- **LLM:** Groq `llama-3.3-70b-versatile` (`GROQ_API_KEY` required).
+- **LLM:** Groq `qwen/qwen3.8-27b` generates; `openai/gpt-oss-120b` is the RAGAS judge
+  and ground-truth author (`judge_model`) — a different family, so no self-grading.
+  Groq retired `llama-3.3-70b-versatile` in Sept 2026. gpt-oss is a reasoning model:
+  its reasoning tokens count toward `max_tokens`. `GROQ_API_KEY` required.
 - **Vector store:** ChromaDB persisted to `chroma_db/` locally; Pinecone in prod.
   Switch via `VECTOR_STORE_MODE=local|pinecone` — no code changes.
-- **Chunking:** 512 tokens, 50 overlap. **Retrieval:** MMR, k=5, fetch_k=20.
+- **Chunking:** 480 **BGE-tokenizer** tokens, 50 overlap (bge-small embeds ≤512 incl.
+  special tokens and silently truncates the rest); fragments <50 chars are dropped.
+  Chunker tests download the BGE tokenizer (~1 MB) on first run.
+  **Retrieval:** MMR, k=5, fetch_k=20.
+- **Parser (`src/ingest/parser.py`)** — every `Item N` heading is a section boundary;
+  repeated consecutive headings are running page headers (MSFT) and get merged; Items
+  4/6/10–16 are dropped. JPM files a "wrapper" 10-K whose MD&A/financials sit outside
+  the Item structure — kept as an `Annual Report` pseudo-section. After parser/chunker
+  changes: re-chunk, then rebuild Chroma **and** Pinecone from scratch (old chunk
+  hashes don't match, so incremental indexing would leave stale vectors behind).
 - **SEC EDGAR requires a User-Agent** — set `SEC_USER_AGENT` to a real name/email.
 - **Free-tier guardrails wrap every Groq call** (`src/chain/quota.py` + `cache.py`):
-  persisted daily budget (90k tokens / 900 req, state in `data/quota_state.json`,
-  resets midnight UTC), 25 RPM throttle, `max_tokens=1024` cap, disk answer cache
+  persisted daily budget **per Groq model** (Groq limits are per model; 90k tokens /
+  900 req each, state in `data/quota_state.<model>.json`, resets midnight UTC —
+  eval judge + `gen_ground_truth.py` charge the judge's budget, the app the generator's), 25 RPM throttle, `max_tokens=1024` cap, disk answer cache
   (`data/cache/`, first-turn questions only), and a retrieval-only degraded answer
-  when the budget is spent — the chain returns `{answer, sources, cached, degraded}`.
+  when the budget is spent or Groq itself errors — the chain returns
+  `{answer, sources, cached, degraded}`.
   `make eval` pre-checks the budget and refuses runs it can't afford (`--force` overrides);
   eval passes `use_cache=False` and a per-question session id.
 
@@ -91,12 +105,15 @@ EMBEDDING_DEVICE=cpu     # "mps" on Apple Silicon
 
 ## Evaluation (the differentiator)
 
-- `src/evaluation/golden_dataset.json` — 20 Q&A pairs with ground truth (factual,
-  comparative, multi-hop).
+- `src/evaluation/golden_dataset.json` — 20 Q&A pairs (factual, comparative, multi-hop).
+  References are LLM-drafted by `scripts/gen_ground_truth.py` (`--ids`/`--all`) from
+  chunks picked via its `QUESTION_META`; it writes `TODO` when the context lacks the
+  answer. Review references by hand before citing scores.
 - RAGAS metrics: faithfulness, answer_relevancy, context_recall.
-- Results go to `eval_results/` (currently empty — regenerate with `make eval` before
-  citing scores in the README).
-- Groq free-tier tokens are the constraint — use `make eval-subset N=5` while iterating.
+- `eval_results/per_question.json` accumulates scores by question id across runs;
+  `scores.json` is the mean over all scored questions (failed judge calls → `null`,
+  excluded). A full 20-question run exceeds one day's budget — split with `OFFSET`.
+- The eval aborts (before judging) if the chain returns a degraded answer.
 
 ## CI / deployment
 
