@@ -32,8 +32,8 @@ from src.config import EVAL_DIR, get_settings
 logger = logging.getLogger(__name__)
 
 GOLDEN_PATH = Path(__file__).parent / "golden_dataset.json"
-OUTPUT_PATH = EVAL_DIR / "scores.json"
-PER_QUESTION_PATH = EVAL_DIR / "per_question.json"
+SCORES_FILE = "scores.json"
+PER_QUESTION_FILE = "per_question.json"
 METRICS = ("faithfulness", "answer_relevancy", "context_recall")
 
 # Per-question cost measured over q01–q08 on the 480-token-chunk index (Oct 2026):
@@ -167,13 +167,17 @@ def _aggregate(rows: dict[str, dict]) -> dict:
     return summary
 
 
-def evaluate(subset: int | None = None, offset: int = 0, force: bool = False) -> dict:
+def evaluate(
+    subset: int | None = None, offset: int = 0, force: bool = False, out_dir: Path = EVAL_DIR
+) -> dict:
     """Run RAGAS metrics: faithfulness, answer_relevancy, context_recall.
 
     Args:
         subset: If given, evaluate only N questions (saves Groq tokens).
         offset: Skip the first `offset` questions (to split a run across days).
         force: Skip the pre-flight budget check (run anyway, risking 429s).
+        out_dir: Where results accumulate — a separate dir per experiment keeps
+            e.g. a routing-on run from overwriting the baseline's rows.
     """
     from datasets import Dataset
     from ragas import RunConfig
@@ -222,7 +226,8 @@ def evaluate(subset: int | None = None, offset: int = 0, force: bool = False) ->
     run_date = datetime.now(UTC).date().isoformat()
     settings = get_settings()
     df = result.to_pandas()
-    rows = json.loads(PER_QUESTION_PATH.read_text()) if PER_QUESTION_PATH.exists() else {}
+    per_question_path, scores_path = out_dir / PER_QUESTION_FILE, out_dir / SCORES_FILE
+    rows = json.loads(per_question_path.read_text()) if per_question_path.exists() else {}
     for pred, (_, rec) in zip(preds, df.iterrows(), strict=True):
         rows[pred["id"]] = {
             **{m: _clean(rec.get(m)) for m in METRICS},
@@ -237,12 +242,13 @@ def evaluate(subset: int | None = None, offset: int = 0, force: bool = False) ->
         "judge": settings.judge_model,
         "embeddings": settings.embedding_model_name,
         "vector_store": settings.vector_store_mode,
+        "company_routing": settings.company_routing,
         "updated": run_date,
     }
-    EVAL_DIR.mkdir(parents=True, exist_ok=True)
-    PER_QUESTION_PATH.write_text(json.dumps(dict(sorted(rows.items())), indent=2))
-    OUTPUT_PATH.write_text(json.dumps(summary, indent=2))
-    logger.info("Saved RAGAS scores to %s", OUTPUT_PATH)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    per_question_path.write_text(json.dumps(dict(sorted(rows.items())), indent=2))
+    scores_path.write_text(json.dumps(summary, indent=2))
+    logger.info("Saved RAGAS scores to %s", scores_path)
     return summary
 
 
@@ -256,7 +262,13 @@ if __name__ == "__main__":
     parser.add_argument("--subset", type=int, default=None, help="Evaluate N questions only")
     parser.add_argument("--offset", type=int, default=0, help="Skip the first N questions")
     parser.add_argument(
+        "--out", default="", help="Subdirectory of eval_results/ for this experiment's results"
+    )
+    parser.add_argument(
         "--force", action="store_true", help="Skip the pre-flight Groq budget check"
     )
     args = parser.parse_args()
-    print(json.dumps(evaluate(subset=args.subset, offset=args.offset, force=args.force), indent=2))
+    summary = evaluate(
+        subset=args.subset, offset=args.offset, force=args.force, out_dir=EVAL_DIR / args.out
+    )
+    print(json.dumps(summary, indent=2))
