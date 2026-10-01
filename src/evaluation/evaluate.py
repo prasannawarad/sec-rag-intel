@@ -229,8 +229,15 @@ def evaluate(
     per_question_path, scores_path = out_dir / PER_QUESTION_FILE, out_dir / SCORES_FILE
     rows = json.loads(per_question_path.read_text()) if per_question_path.exists() else {}
     for pred, (_, rec) in zip(preds, df.iterrows(), strict=True):
+        new = {m: _clean(rec.get(m)) for m in METRICS}
+        old = rows.get(pred["id"], {})
+        if all(v is None for v in new.values()) and old:
+            # Every judge call failed (e.g. a 429) — never replace scores with a failure.
+            logger.warning("%s: all metrics failed — keeping previous scores", pred["id"])
+            continue
         rows[pred["id"]] = {
-            **{m: _clean(rec.get(m)) for m in METRICS},
+            # A metric that failed this run keeps its previous score rather than going null.
+            **{m: new[m] if new[m] is not None else old.get(m) for m in METRICS},
             "response": pred["response"],  # kept so a bad score can be inspected for free
             "model": settings.llm_model,
             "date": run_date,

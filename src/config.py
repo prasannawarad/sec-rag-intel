@@ -29,13 +29,19 @@ class Settings(BaseSettings):
     # judge are deliberately different model families — no self-evaluation bias.
     llm_model: str = "qwen/qwen3.8-27b"
     judge_model: str = "openai/gpt-oss-120b"
-    llm_max_tokens: int = 1024  # cap answer length — uncapped answers drain the free tier
+    # Cap answer length. Must stay under Groq's free-tier output-tokens-per-minute
+    # limit for qwen (1,000): max_tokens counts as "requested", and 1024 got the
+    # whole request rejected as too large.
+    llm_max_tokens: int = 900
 
     # Groq free-tier guardrails. Budgets sit below the real per-model limits
     # (console.groq.com/settings/limits) so a miscount never hard-blocks the account.
     groq_rpm_limit: int = 25
     groq_daily_request_budget: int = 900
     groq_daily_token_budget: int = 90_000
+    # gpt-oss-120b's real free-tier limit is 200k tokens/day (from Groq's 429 message);
+    # the judge only runs offline (eval, ground truth), so it gets most of that.
+    judge_daily_token_budget: int = 190_000
     quota_state_path: str = str(DATA_DIR / "quota_state.json")
 
     # Answer cache — repeat questions are served from disk, costing 0 tokens

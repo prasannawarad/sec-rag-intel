@@ -67,6 +67,10 @@ scripts/                   ← build_index.py, index_pinecone.py, gen_ground_tru
   its reasoning tokens count toward `max_tokens`. `GROQ_API_KEY` required.
 - **Vector store:** ChromaDB persisted to `chroma_db/` locally; Pinecone in prod.
   Switch via `VECTOR_STORE_MODE=local|pinecone` — no code changes.
+- **Company routing** (`COMPANY_ROUTING`, default on): unfiltered questions naming several
+  companies get one MMR search per company (≤8 chunks total). Known gap: dense retrieval
+  ranks number-heavy table chunks low (q03/q17/q18 answers rank 4–22) — hybrid BM25 is
+  the planned fix.
 - **Chunking:** 480 **BGE-tokenizer** tokens, 50 overlap (bge-small embeds ≤512 incl.
   special tokens and silently truncates the rest); fragments <50 chars are dropped.
   Chunker tests download the BGE tokenizer (~1 MB) on first run.
@@ -79,9 +83,12 @@ scripts/                   ← build_index.py, index_pinecone.py, gen_ground_tru
   hashes don't match, so incremental indexing would leave stale vectors behind).
 - **SEC EDGAR requires a User-Agent** — set `SEC_USER_AGENT` to a real name/email.
 - **Free-tier guardrails wrap every Groq call** (`src/chain/quota.py` + `cache.py`):
-  persisted daily budget **per Groq model** (Groq limits are per model; 90k tokens /
-  900 req each, state in `data/quota_state.<model>.json`, resets midnight UTC —
-  eval judge + `gen_ground_truth.py` charge the judge's budget, the app the generator's), 25 RPM throttle, `max_tokens=1024` cap, disk answer cache
+  persisted daily budget **per Groq model** (Groq limits are per model; generator 90k
+  tokens/day, judge 190k — its real limit is 200k; state in
+  `data/quota_state.<model>.json`, resets midnight UTC — eval judge + `gen_ground_truth.py`
+  charge the judge's budget, the app the generator's), 25 RPM throttle, `max_tokens=900`
+  cap (qwen's free tier rejects requests whose max_tokens exceed its 1,000
+  output-tokens/minute limit), disk answer cache
   (`data/cache/`, first-turn questions only), and a retrieval-only degraded answer
   when the budget is spent or Groq itself errors — the chain returns
   `{answer, sources, cached, degraded}`.
@@ -113,7 +120,11 @@ EMBEDDING_DEVICE=cpu     # "mps" on Apple Silicon
 - `eval_results/per_question.json` accumulates scores by question id across runs;
   `scores.json` is the mean over all scored questions (failed judge calls → `null`,
   excluded). A full 20-question run exceeds one day's budget — split with `OFFSET`.
-- The eval aborts (before judging) if the chain returns a degraded answer.
+- The eval aborts (before judging) if the chain returns a degraded answer. A re-run never
+  replaces a score with a failed (null) one.
+- Experiments live in their own dirs: `make eval-subset … OUT=baseline` (routing off:
+  `COMPANY_ROUTING=false`) vs `OUT=routing`. Raise the judge budget for a long run with
+  `JUDGE_DAILY_TOKEN_BUDGET`; Groq's 200k/day judge limit is the real ceiling.
 
 ## CI / deployment
 

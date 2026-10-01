@@ -186,9 +186,12 @@ def _guard_for(model: str) -> QuotaGuard:
     settings = get_settings()
     base = Path(settings.quota_state_path)
     slug = re.sub(r"[^A-Za-z0-9.-]+", "_", model)
+    is_judge = model == settings.judge_model
     return QuotaGuard(
         base.with_name(f"{base.stem}.{slug}{base.suffix}"),
-        daily_token_budget=settings.groq_daily_token_budget,
+        daily_token_budget=(
+            settings.judge_daily_token_budget if is_judge else settings.groq_daily_token_budget
+        ),
         daily_request_budget=settings.groq_daily_request_budget,
         rpm_limit=settings.groq_rpm_limit,
     )
