@@ -99,7 +99,7 @@
     {
       "id": "q11",
       "question": "What stock repurchase programmes are active across the eight companies?",
-      "ground_truth": "The excerpts only mention one company, Apple Inc. As of September 27, 2025, Apple Inc. had two active stock repurchase programs: one announced on May 2, 2024, to repurchase up to $110 billion of common stock, which had been fully utilized, and another announced on May 1, 2025, to repurchase up to $100 billion of common stock, with $221 million utilized as of September 27, 2025.",
+      "ground_truth": "Seven of the eight companies have share repurchase authorizations: Apple (a new program of up to $100 billion announced in May 2025, after using the final $19.8 billion of its $110 billion May 2024 program), Microsoft (a $60.0 billion program approved in September 2024 that commenced in April 2025), Amazon (a $10.0 billion program authorized in March 2022, with no repurchases in 2023, 2024 or 2025), Alphabet (an additional $70.0 billion authorized in April 2025, with $69.5 billion remaining at December 31, 2025), JPMorgan Chase (a $50 billion program effective July 1, 2025), NVIDIA (an additional $60.0 billion authorized on August 26, 2025, without expiration), and Meta (a program with no expiration date, with $25.03 billion remaining at December 31, 2025 after $26.26 billion of repurchases in 2025). Tesla discloses no share repurchase program.",
       "filters": {},
       "type": "multi_hop"
     },
@@ -165,7 +165,7 @@
     {
       "id": "q19",
       "question": "What cybersecurity incident disclosures appear in the dataset?",
-      "ground_truth": "Ransomware and other cybersecurity attacks are mentioned as risks that the Company's operations, retail stores, and facilities, as well as those of its suppliers and contract manufacturers, are subject to.",
+      "ground_truth": "Microsoft is the only company that discloses a specific incident: beginning in late November 2023, a nation-state associated threat actor used a password spray attack to compromise a legacy test account and gain access to Microsoft email accounts, as it reported to the SEC on January 19, 2024. Amazon says some of its systems have experienced past security incidents that did not have a material adverse effect on its operating results. Alphabet, JPMorgan Chase and Meta state that cybersecurity threats, including previous incidents, have not materially affected their business strategy, results of operations or financial condition. Apple, NVIDIA and Tesla describe cyberattacks such as ransomware only as risks, without disclosing a specific incident.",
       "filters": {},
       "type": "multi_hop"
     },
