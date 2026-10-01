@@ -194,8 +194,10 @@ def evaluate(subset: int | None = None, offset: int = 0, force: bool = False) ->
     ds = Dataset.from_list([{k: v for k, v in p.items() if k != "id"} for p in preds])
     judge_llm, judge_emb = _build_judge()
 
-    # Groq free tier: few parallel calls (RPM/TPM limits), generous retry backoff
-    run_cfg = RunConfig(max_workers=2, max_retries=5, max_wait=120, timeout=120)
+    # Groq free tier: one judge call at a time — gpt-oss's tokens-per-minute limit
+    # made parallel calls queue behind 429 retries until they hit the timeout
+    # (null scores). Sequential + a long timeout trades wall-clock for complete data.
+    run_cfg = RunConfig(max_workers=1, max_retries=6, max_wait=60, timeout=300)
 
     result = ragas_evaluate(
         ds,
@@ -223,6 +225,7 @@ def evaluate(subset: int | None = None, offset: int = 0, force: bool = False) ->
     for pred, (_, rec) in zip(preds, df.iterrows(), strict=True):
         rows[pred["id"]] = {
             **{m: _clean(rec.get(m)) for m in METRICS},
+            "response": pred["response"],  # kept so a bad score can be inspected for free
             "model": settings.llm_model,
             "date": run_date,
         }
