@@ -36,12 +36,13 @@ OUTPUT_PATH = EVAL_DIR / "scores.json"
 PER_QUESTION_PATH = EVAL_DIR / "per_question.json"
 METRICS = ("faithfulness", "answer_relevancy", "context_recall")
 
-# Per-question cost measured on the 480-token-chunk index (Sept 2026): ~3.5k
-# generator tokens (5 chunks + answer) and ~11k judge tokens (faithfulness makes
-# 2 calls with the full contexts, answer_relevancy 3, context_recall 1).
-# Generator and judge are separate Groq models with separate daily budgets.
+# Per-question cost measured over q01–q08 on the 480-token-chunk index (Oct 2026):
+# ~3.5k generator tokens (5 chunks + answer) and ~13k judge tokens (faithfulness
+# makes 2 calls with the full contexts, answer_relevancy 3, context_recall 1;
+# JPM's long annual-report chunks run ~17k). Generator and judge are separate
+# Groq models with separate daily budgets.
 EST_GENERATION_TOKENS_PER_Q = 3_500
-EST_JUDGE_TOKENS_PER_Q = 11_000
+EST_JUDGE_TOKENS_PER_Q = 13_000
 
 
 def _preflight_budget_check(n_questions: int, force: bool) -> None:
