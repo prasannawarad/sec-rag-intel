@@ -63,6 +63,9 @@ class Settings(BaseSettings):
     chunk_overlap: int = 50
     retriever_k: int = 5
     retriever_fetch_k: int = 20
+    # Route unfiltered multi-company questions to one search per named company
+    # (src/retrieval/retriever.py). False reproduces the pre-routing baseline.
+    company_routing: bool = True
 
     log_level: str = Field(default="INFO")
 
