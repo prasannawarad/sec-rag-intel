@@ -1,0 +1,15 @@
+{
+  "n_questions": 20,
+  "faithfulness": 0.7855,
+  "faithfulness_n_scored": 18,
+  "answer_relevancy": 0.7446,
+  "answer_relevancy_n_scored": 17,
+  "context_recall": 0.5564,
+  "context_recall_n_scored": 17,
+  "llm": "qwen/qwen3.8-27b",
+  "judge": "openai/gpt-oss-120b",
+  "embeddings": "BAAI/bge-small-en-v1.5",
+  "vector_store": "local",
+  "company_routing": false,
+  "updated": "2026-10-01"
+}

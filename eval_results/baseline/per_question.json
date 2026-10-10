@@ -1,0 +1,157 @@
+{
+  "q01": {
+    "faithfulness": null,
+    "answer_relevancy": null,
+    "context_recall": null,
+    "response": "Based on the provided context from the Apple Inc. 2025 Form 10-K, the main risk factors disclosed are:\n\n1.  **Design and Manufacturing Defects:** The Company\u2019s products and services may be affected by design and manufacturing defects, which could materially adversely affect the business and harm the Company\u2019s reputation. These defects can exist in hardware, software, or components purchased from third parties, potentially making products unsafe and creating risks of environmental or property damage and personal injury. The introduction of new technologies, such as artificial intelligence features, may increase safety risks, including exposing users to harmful or inaccurate content. The Company may not be able to detect and fix all issues, leading to widespread technical problems, product liability claims, recalls, write-offs, and significant warranty and litigation costs [AAPL 2025 10-K - Risk Factors].\n2.  **Inventory and Asset Write-Downs:** The Company is exposed to the risk of write-downs on the value of its inventory and other assets, as well as purchase commitment cancellation risk [AAPL 2025 10-K - Risk Factors].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q02": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9421,
+    "context_recall": 0.5,
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q03": {
+    "faithfulness": 0.5556,
+    "answer_relevancy": 0.0,
+    "context_recall": null,
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q04": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.8158,
+    "context_recall": 0.5,
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q05": {
+    "faithfulness": null,
+    "answer_relevancy": 0.9418,
+    "context_recall": 1.0,
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q06": {
+    "faithfulness": 1.0,
+    "answer_relevancy": null,
+    "context_recall": 0.75,
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q07": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9499,
+    "context_recall": 1.0,
+    "response": "Based on the provided filings, JPMorgan Chase highlights the following credit-risk exposures:\n\n**1. General Credit and Investment Risk**\nThe Firm defines credit and investment risk as \"the risk associated with the default or change in credit profile of a client, counterparty or customer; or loss of principal or a reduction in expected returns on investments, including consumer credit risk, wholesale credit risk, and investment portfolio risk\" [JPM 2025 10-K - Annual Report - CREDIT AND INVESTMENT RISK MANAGEMENT].\n\n**2. Specific Risk Factors**\nThe Firm identifies several material risk factors related to credit:\n*   **Adverse Changes in Financial Condition:** Risks arising from \"adverse changes in the financial condition of clients, customers, counterparties, central counterparties and other market participants\" [JPM 2025 10-K - Risk Factors - Summary].\n*   **Collateral Value Declines:** The \"potential for losses due to declines in the value of collateral\" [JPM 2025 10-K - Risk Factors - Summary].\n*   **Concentrations:** \"Potential negative impacts from concentrations of credit risk with respect to clients, customers, counterparties and other market participants\" [JPM 2025 10-K - Risk Factors - Summary].\n*   **Interrelationships and Contagion:** The risk that a \"significant deterioration in the credit quality of a counterparty, borrower or other obligor could lead to concerns about the creditworthiness of other parties in similar, related or dependent industries,\" which could exacerbate credit, liquidity, and market risk exposure [JPM 2025 10-K - Risk Factors - Credit Risks].\n*   **Consumer Credit Expansion:** The risk that \"excessive expansion of consumer credit by competitors\" could lead to loans being provided to \"less-creditworthy borrowers,\" potentially resulting in defaults, an \"increase in the allowance for credit losses and higher charge-offs\" [JPM 2025 10-K - Risk Factors - Credit Risks].\n*   **Recessionary Conditions:** The risk that \"widespread defaults on consumer debt could lead to recessionary conditions in the U.S. economy,\" causing consumer businesses to earn lower revenues [JPM 2025 10-K - Risk Factors - Credit Risks].\n\n**3. Real Estate Exposure**\nThe Firm specifically highlights its Real Estate exposure, which was **$224.9 billion** as of December 31, 2025 [JPM 2025 10-K - Annual Report - Management\u2019s discussion and analysis]. Within this category, \"Criticized exposure decreased by **$714 million** from **$12.4 billion** at December 31, 2024 to **$11.7 billion** at December 31, 2025\" [JPM 2025 10-K - Annual Report - Management\u2019s discussion and analysis]. The total Real Estate Exposure (loans and lending-related commitments plus derivative receivables) was **$224,381 million** (or $224.4 billion) as of December 31, 2025 [JPM 2025 10-K - Annual Report - Management\u2019s discussion and analysis].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q08": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9659,
+    "context_recall": 1.0,
+    "response": "Yes, Meta has disclosed material litigation and regulatory actions related to user privacy, including a significant fine from the Irish Data Protection Commission (IDPC) and ongoing challenges regarding data transfers and compliance.\n\nSpecifically, the filings note that in May 2023, the IDPC issued a Final Decision concluding that Meta Platforms Ireland\u2019s reliance on Standard Contractual Clauses (SCCs) for certain transfers of European Economic Area (EEA) Facebook user data was not in compliance with the GDPR. Consequently, the IDPC issued an administrative fine of \"EUR \u20ac1.2 billion\" as well as corrective orders requiring Meta Platforms Ireland to suspend the relevant transfers and cease unlawful processing, including storage, of such data in the United States. Meta is currently appealing this Final Decision, which is subject to a stay from the Irish High Court [META 2025 10-K - Risk Factors].\n\nAdditionally, the FTC initiated an administrative proceeding against Meta alleging deficient compliance and violations of the Children's Online Privacy Protection Act (COPPA), the COPPA Rule, and Section 5 of the Federal Trade Commission Act. Meta is challenging this action at the agency and in federal court. The filing notes that if Meta is unsuccessful in its challenge and the agency imposes its proposed order, Meta would be subject to significant limitations, including on its ability to launch new and modified products or use data of users under 18 years old [META 2025 10-K - Risk Factors].\n\nMeta also discloses that it has been subject to FTC, state attorneys general, and other government inquiries in the United States, Europe, and other jurisdictions in connection with its platform and user data practices, as well as the misuse of certain data by a developer that shared such data with third parties in violation of terms and policies. While a settlement and modified consent order to resolve the FTC inquiry took effect in April 2020, certain state attorneys general inquiries and litigation, and certain government inquiries in other jurisdictions remain ongoing [META 2025 10-K - Risk Factors].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q09": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.8987,
+    "context_recall": 1.0,
+    "response": "Alphabet states that it generates a significant portion of its revenues from advertising, specifically noting that it \"generated more than 70% of total revenues from online advertising in 2025\" [GOOGL 2025 10-K - Risk Factors]. The company identifies several risks associated with this concentration, including:\n\n*   **Partner Dependency:** Many advertisers, distributors, digital publishers, and content providers can terminate their contracts at any time and may stop doing business if Alphabet does not create more value than available alternatives [GOOGL 2025 10-K - Risk Factors].\n*   **Market Shifts:** Reduced spending by advertisers, shifts in online advertising, new advertising formats, or technologies that block ads or affect personalization could harm the business [GOOGL 2025 10-K - Risk Factors].\n*   **Economic Correlation:** Advertiser expenditures tend to correlate with overall economic conditions, meaning adverse macroeconomic conditions can affect demand and cause fluctuations in advertising spend [GOOGL 2025 10-K - Risk Factors].\n*   **AI Impact:** The company notes that AI is \"quickly reshaping the advertising industry,\" and there is no assurance that Alphabet will adapt effectively to these shifts in advertising formats and strategies [GOOGL 2025 10-K - Risk Factors].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q10": {
+    "faithfulness": 0.2308,
+    "answer_relevancy": 0.9365,
+    "context_recall": 0.0,
+    "response": "Based on the provided filings, **Meta** explicitly identifies generative AI as a material risk factor.\n\n**Meta** states: \"We have made significant investments in AI initiatives, including generative AI and superintelligence... There are significant risks involved in developing and deploying AI... For example, our AI-related efforts, particularly those related to generative AI and superintelligence, subject us to risks related to harmful or illegal content, accuracy, misinformation and deepfakes... bias, discrimination, toxicity, consumer protection, products liability, intellectual property infringement or misappropriation, defamation, data privacy, cybersecurity, and sanctions and export controls, among others.\" [META 2025 10-K - Risk Factors]\n\nWhile **Microsoft** mentions that \"Increasing use of generative AI models in our internal systems may create new attack surfaces or methods for adversaries,\" this is discussed in the context of internal security and evolving internal environments rather than as a standalone material risk factor for the business as a whole in the provided text. [MSFT 2025 10-K - Risk Factors]\n\n**NVIDIA** and **Tesla** discuss AI initiatives and investments but do not list generative AI specifically as a material risk factor in the provided excerpts. NVIDIA discusses the risk of open-source AI reducing demand for its products [NVDA 2026 10-K - Management's Discussion and Analysis], and Tesla discusses AI-enabled products like FSD as a driver for demand [TSLA 2025 10-K - Management's Discussion and Analysis].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q11": {
+    "faithfulness": 0.1667,
+    "answer_relevancy": 0.8903,
+    "context_recall": 0.125,
+    "response": "Based on the provided filings, the following companies have active stock repurchase programs:\n\n**Apple (AAPL)**\n*   **Program Details:** On May 1, 2025, the Company announced a program to repurchase up to $100 billion of its common stock.\n*   **Status:** As of September 27, 2025, $221 million of the May 2025 program had been utilized. The filing notes that the previous May 2024 program ($110 billion) was fully utilized in the fourth quarter of 2025.\n*   **Citation:** [AAPL 2025 10-K - Market for Registrant's Common Equity]\n\n**Meta (META)**\n*   **Program Details:** The board of directors has authorized a share repurchase program that does not have an expiration date.\n*   **Status:** The program does not obligate the company to repurchase any specific dollar amount or number of shares.\n*   **Citation:** [META 2025 10-K - Risk Factors]\n\n**Alphabet (GOOGL)**\n*   **Program Details:** In April 2025, the Board of Directors authorized an additional $70.0 billion share repurchase program for Class A and Class C shares.\n*   **Status:** As of December 31, 2025, $69.5 billion remained available for Class A and Class C share repurchases.\n*   **Citation:** [GOOGL 2025 10-K - Management's Discussion and Analysis]\n\n**Amazon (AMZN)**\n*   **Program Details:** In March 2022, the Board of Directors authorized a program to repurchase up to $10.0 billion of common stock, with no fixed expiration.\n*   **Status:** As of December 31, 2025, $6.1 billion remained under the repurchase program. The filing states there were no repurchases in 2023, 2024, or 2025.\n*   **Citation:** [AMZN 2025 10-K - Financial Statements]\n\n*Note: The provided context only contains information for four companies (AAPL, META, GOOGL, AMZN). I cannot find information regarding the other four companies mentioned in your question.*",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q12": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9444,
+    "context_recall": 1.0,
+    "response": "Apple describes its dependence on third-party manufacturers by stating that a \"significant majority of the Company\u2019s manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, India, Japan, South Korea, Taiwan and Vietnam, in addition to sourcing from partners and facilities located in the U.S.\" [AAPL 2025 10-K - Risk Factors].\n\nThe company further notes that it \"relies on single-source partners in the U.S., Asia and Europe to supply and manufacture many components, and on partners primarily located in Asia, for final assembly of substantially all of the Company\u2019s hardware products.\" [AAPL 2025 10-K - Risk Factors].\n\nApple also indicates that it has \"outsourced much of its transportation and logistics management,\" which, while potentially lowering operating costs, \"reduce[s] the Company\u2019s direct control over production and distribution.\" [AAPL 2025 10-K - Risk Factors]. This diminished control \"has from time to time had, and may in the future have, an adverse effect on the cost, quality or quantity of products manufactured or services provided, or adversely affect the Company\u2019s flexibility to respond to changing conditions.\" [AAPL 2025 10-K - Risk Factors].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q13": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.966,
+    "context_recall": 1.0,
+    "response": "Based on the provided filings, Microsoft describes its approach to AI safety and risk management through the following points:\n\n*   **Responsible AI Policies and Practices:** Microsoft states that it is committed to making artificial intelligence available \"broadly and doing so responsibly.\" The company notes that if AI solutions are \"contrary to our responsible AI policies and practices,\" or have unintended consequences, its reputation and business could be adversely affected [MSFT 2025 10-K - Management's Discussion and Analysis].\n*   **Human Review:** The filings indicate that \"Human review of certain inputs and outputs may be required, including for agentic AI systems that can take actions autonomously\" [MSFT 2025 10-K - Risk Factors].\n*   **Risk Mitigation:** Microsoft acknowledges that AI algorithms may be flawed, datasets may be biased or inaccurate, and generated content may be harmful. The company notes that ineffective AI development or deployment practices could result in incidents that \"impair the acceptance of AI solutions, cause harm to individuals, customers, or society, or result in our products and services not working as intended\" [MSFT 2025 10-K - Risk Factors].\n*   **Regulatory Compliance:** Microsoft monitors the \"evolving regulatory landscape,\" including new laws in the European Union, and navigates global divergences in how AI issues are addressed. The company has implemented \"comprehensive compliance programs\" and \"technical safeguards\" to ensure its operations, products, and services meet applicable legal standards [MSFT 2025 10-K - Business].\n*   **Cybersecurity Integration:** While primarily focused on security, Microsoft\u2019s \"Secure Future Initiative\" (SFI) aligns with principles such as \"Secure by Design\" and \"Secure by Default,\" which apply to the design and operation of its products and services, including those powered by AI [MSFT 2025 10-K - Cybersecurity].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q14": {
+    "faithfulness": 0.8182,
+    "answer_relevancy": 0.0,
+    "context_recall": 0.3333,
+    "response": "Based on the provided filings, I cannot provide a direct comparison of gross margin trends for both companies because the context does not contain the specific gross margin percentages for Tesla.\n\nHowever, the following information is available:\n\n**NVIDIA**\n*   Gross margins decreased to **71.1%** in fiscal year 2026 from **75.0%** in fiscal year 2025.\n*   This decrease was attributed to the business model transition from Hopper HGX systems to Blackwell full-scale datacenter solutions and a **$4.5 billion** charge associated with H20 excess inventory and purchase obligations in the first quarter of fiscal year 2026.\n*   The net effect on gross margin was an unfavorable impact of **2.6%** in fiscal year 2026 and **2.3%** in fiscal year 2025.\n    *   [NVDA 2026 10-K - Management's Discussion and Analysis]\n\n**Tesla**\n*   The provided text includes a section titled \"Cost of Revenues and Gross Margin\" and lists cost of revenues for Automotive sales, Automotive leasing, and Services and other for the years ended December 31, 2025, 2024, and 2023.\n*   However, the specific gross margin percentages or total gross profit figures required to determine the trend are not present in the provided excerpt.\n    *   [TSLA 2025 10-K - Management's Discussion and Analysis]\n\nTherefore, I cannot find this information in the provided filings to complete the comparison.",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q15": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.889,
+    "context_recall": 1.0,
+    "response": "Based on the provided filings, Amazon reports the following potential negative impacts of climate change:\n\n*   Increased operating costs due to more frequent extreme weather events or climate-related changes, such as rising temperatures and water scarcity.\n*   Increased investment requirements associated with the transition to a low-carbon economy.\n*   Decreased demand for products and services as a result of changes in customer behavior.\n*   Increased compliance costs due to more extensive and global regulations and third-party requirements.\n*   Reputational damage resulting from perceptions of the company's environmental impact.\n\nAdditionally, the company cites \"disruptions from natural or human-caused disasters... or extreme weather (including as a result of climate change)\" as a general risk factor.\n\n[AMZN 2025 10-K - Risk Factors]",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q16": {
+    "faithfulness": 0.8125,
+    "answer_relevancy": 0.8199,
+    "context_recall": 0.0,
+    "response": "Based on the provided filings, **NVIDIA** (NVDA) discloses exposure to China-related regulatory risk. The filing details several specific risks, including:\n\n*   Restrictions by the U.S. government on the import and sale of products incorporating technologies developed or manufactured in China, such as \u201cConnected Vehicle\u201d restrictions and potential limits on supporting third-party applications built on open-source foundation models originating in China [NVDA 2026 10-K - Risk Factors].\n*   Restrictions imposed by the Chinese government on gaming activities and access to games, which may adversely affect Gaming revenue [NVDA 2026 10-K - Risk Factors].\n*   Increased oversight of digital platform companies in China, which may adversely affect Data Center revenue [NVDA 2026 10-K - Risk Factors].\n*   Actions by the Chinese government encouraging customers to purchase from China-based competitors and discouraging the purchase of NVIDIA data center products [NVDA 2026 10-K - Risk Factors].\n*   A Chinese government Action Plan endorsing new standards regarding compute performance per watt and per memory bandwidth for accelerators in new and renovated data centers, which could prevent NVIDIA from designing products to meet these standards if U.S. export controls were lifted [NVDA 2026 10-K - Risk Factors].\n*   Regulatory interest and information requests from competition regulators in China regarding NVIDIA's sales, supply allocation, and partnerships [NVDA 2026 10-K - Risk Factors].\n\nWhile **Tesla** (TSLA) mentions risks related to \"data localization requirements\" and \"international governmental entities\" in the context of cybersecurity and data privacy, the provided text does not explicitly attribute these specific risks to China or detail China-specific regulatory exposures for Tesla [TSLA 2025 10-K - Risk Factors].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q17": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.8263,
+    "context_recall": 0.0,
+    "response": "JPMorgan Chase & Co. reported a Tier 1 capital ratio of 19.8% as of December 31, 2025, for J.P. Morgan Securities plc, and a Tier 1 capital ratio of 20.9% for J.P. Morgan SE (JPMSE) as of the same date. The filing does not explicitly state a single consolidated Tier 1 capital ratio for the entire Firm in the provided text, but it notes that the Standardized and Advanced CET1 ratios were 14.6% and 14.1%, respectively, and the SLR was 5.8%.\n\n[JPM 2025 10-K - Annual Report]",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q18": {
+    "faithfulness": 0.0,
+    "answer_relevancy": 0.0,
+    "context_recall": 0.0,
+    "response": "I cannot find this information in the provided filings.",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q19": {
+    "faithfulness": 0.5556,
+    "answer_relevancy": 0.8708,
+    "context_recall": 0.25,
+    "response": "Based on the provided filings, the following cybersecurity incident disclosures appear in the dataset:\n\n**Microsoft (MSFT)**\n*   **Incident Description:** In late November 2023, a \"nation-state associated threat actor used a password spray attack to compromise a legacy test account and, in turn, gain access to Microsoft email accounts.\"\n*   **Impact:** The threat actor \"used information it obtained to gain unauthorized access to some of our source code repositories and internal systems.\" The filing notes that the threat actor \"could continue to utilize this and other information to attempt to gain access to our systems or otherwise adversely affect our business and results of operations.\"\n*   **Consequences:** The incident \"has and may continue to result in harm to our reputation and customer relationships.\"\n*   **Regulatory Disclosure:** This incident was previously disclosed in a \"Form 8-K filed with the Securities and Exchange Commission on January 19, 2024 and amended on March 8, 2024.\"\n    *   [MSFT 2025 10-K - Risk Factors]\n\n**Tesla (TSLA)**\n*   **Process Disclosure:** Tesla discloses that it has \"implemented incident response and breach management processes which have four overarching and interconnected stages: 1) preparation for a cybersecurity incident, 2) detection and analysis of a security incident, 3) containment, eradication and recovery, and 4) post-incident analysis.\"\n*   **Evaluation:** \"Security events and data incidents are evaluated, ranked by severity and prioritized for response and remediation.\"\n    *   [TSLA 2025 10-K - Cybersecurity]\n\n**Meta (META)**\n*   **General Risk Disclosure:** Meta discloses that its efforts to protect data \"may also be unsuccessful due to software bugs, misconfigurations, vulnerabilities, or other technical malfunctions; employee, contractor, or vendor error or malfeasance; social engineering or other cyber-attacks directed towards our personnel or their access; misuse of company data or systems by our personnel; defects or vulnerabilities in our vendors' information technology systems or offerings; government exploitation or surveillance; breaches of physical security of our facilities, technical infrastructure, or other equipment; or other threats that evolve.\"\n*   **AI-Specific Risks:** The filing notes that efforts to develop and deploy AI models \"expose us to increased and novel risks and vulnerabilities, including prompt injection, errors, and other issues related to AI agents, as well as compromise of valuable intellectual property including source code, model weights, and other assets.\"\n    *   [META 2025 10-K - Risk Factors]",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  },
+  "q20": {
+    "faithfulness": 1.0,
+    "answer_relevancy": null,
+    "context_recall": null,
+    "response": "Based on the provided filings, here is a summary of Alphabet's Other Bets segment performance:\n\n**Business Description and Revenue Sources**\nOther Bets is described as a combination of multiple operating segments that are not individually material. The segment includes businesses at various stages of development, ranging from research and development (such as X) to scaling commercialization (such as Waymo). Revenues from this segment are generated primarily from the sale of autonomous transportation services and internet services [GOOGL 2025 10-K - Financial Statements - Note 15].\n\n**Financial Performance (2023\u20132025)**\nThe following table presents the revenue and operating income (loss) for the Other Bets segment in millions:\n\n| Metric | 2023 | 2024 | 2025 |\n| :--- | :--- | :--- | :--- |\n| **Revenues** | $1,527 | $1,648 | $1,537 |\n| **Operating Income (Loss)** | $(4,095) | *Data not fully visible in context* | *Data not fully visible in context* |\n\n*Note: The provided text cuts off after the 2023 operating loss figure of $(4,095) million. The 2024 and 2025 operating income/loss figures are not present in the provided context.*\n\n**Cost Allocation**\nCertain costs are not allocated to the Other Bets segment because they represent Alphabet-level activities. These include:\n*   Certain AI-focused shared research and development activities (including employee compensation and technical infrastructure usage for general AI models).\n*   Corporate initiatives such as philanthropic activities.\n*   Corporate shared costs such as certain finance, human resource, and legal costs, including certain fines and settlements.\n*   Charges associated with employee severance and office space reductions.\n*   Hedging gains (losses) related to revenue [GOOGL 2025 10-K - Financial Statements - Note 15].\n\n**Performance Evaluation**\nThe Chief Operating Decision Maker (CODM), Chief Executive Officer Sundar Pichai, uses segment operating income (loss) to allocate resources and assess performance by monitoring actual results versus the annual plan. Operating segments are not evaluated using asset information [GOOGL 2025 10-K - Financial Statements - Note 15].",
+    "model": "qwen/qwen3.8-27b",
+    "date": "2026-10-01"
+  }
+}
