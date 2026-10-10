@@ -30,6 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.chain.quota import get_quota_guard  # noqa: E402
 from src.chain.rag_chain import build_rag_chain, clear_session  # noqa: E402
+from src.config import get_settings  # noqa: E402
 from src.ingest.downloader import DEFAULT_TICKERS  # noqa: E402
 
 EXAMPLE_QUESTIONS = [
@@ -236,6 +237,14 @@ with st.sidebar:
     st.caption(
         "**Stack:** BGE-small embeddings · Pinecone · "
         "Groq Qwen3.8 27B · LangChain LCEL · RAGAS eval"
+    )
+
+# A missing key otherwise surfaces only as "LLM temporarily unavailable" on every
+# answer — say what's actually wrong (deployment secrets), never the value.
+if not get_settings().groq_api_key:
+    st.warning(
+        "GROQ_API_KEY is not set, so answers fall back to filing excerpts. "
+        "Add it to the app's secrets (Streamlit Cloud: Settings → Secrets) or to `.env`."
     )
 
 # ---- masthead --------------------------------------------------------
