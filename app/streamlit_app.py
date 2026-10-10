@@ -212,8 +212,10 @@ with st.sidebar:
 
     st.markdown('<div class="side-label">Filters</div>', unsafe_allow_html=True)
     ticker = st.selectbox("Company", options=["(any)"] + DEFAULT_TICKERS)
-    year = st.number_input("Year", min_value=2015, max_value=2030, value=2025, step=1)
-    filing_type = st.selectbox("Filing type", options=["(any)", "10-K", "10-Q"])
+    # "(any)" by default: fiscal years differ by company (NVIDIA's latest 10-K is FY2026),
+    # so a fixed default year silently hid whole companies from every answer.
+    year = st.selectbox("Fiscal year", options=["(any)", 2026, 2025, 2024])
+    filing_type = st.selectbox("Filing type", options=["(any)", "10-K"])  # no 10-Qs indexed
 
     st.markdown('<div class="side-label">Groq free tier · today</div>', unsafe_allow_html=True)
     quota = get_quota_guard().status()
@@ -232,8 +234,8 @@ with st.sidebar:
         st.rerun()
 
     st.caption(
-        "**Stack:** BGE-small embeddings · ChromaDB · "
-        "Groq Llama 3.3 70B · LangChain LCEL · RAGAS eval"
+        "**Stack:** BGE-small embeddings · Pinecone · "
+        "Groq Qwen3.8 27B · LangChain LCEL · RAGAS eval"
     )
 
 # ---- masthead --------------------------------------------------------
@@ -243,7 +245,7 @@ st.markdown(
   <div class="mast-kicker">United States Securities and Exchange Commission · EDGAR corpus</div>
   <div class="mast-title">SEC Filing <em>Intelligence</em></div>
   <div class="mast-sub">
-    <span>Form 10-K / 10-Q · Natural-language analysis · Grounded &amp; cited</span>
+    <span>Form 10-K · Natural-language analysis · Grounded &amp; cited</span>
     <span>{datetime.now(tz=UTC).strftime("%d %b %Y").upper()}</span>
   </div>
 </div>
@@ -283,7 +285,7 @@ if question:
             with st.spinner("Consulting the filings…"):
                 chain = build_rag_chain(
                     ticker=None if ticker == "(any)" else ticker,
-                    year=int(year),
+                    year=None if year == "(any)" else int(year),
                     filing_type=None if filing_type == "(any)" else filing_type,
                 )
                 result = chain.invoke(
