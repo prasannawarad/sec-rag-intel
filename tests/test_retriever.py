@@ -31,6 +31,8 @@ def test_build_retriever_returns_object():
         ),
         ("What cybersecurity incident disclosures appear in the dataset?", list(COMPANY_ALIASES)),
         ("How is metadata filtering used in retrieval?", []),  # "meta" must be a whole word
+        ("what are Nvidias income?", ["NVDA"]),  # possessive typed without the apostrophe
+        ("Compare Apple’s and Microsoft's margins", ["AAPL", "MSFT"]),  # curly + straight
     ],
 )
 def test_detect_tickers(question, expected):

@@ -54,7 +54,8 @@ def detect_tickers(question: str) -> list[str]:
     found = [
         ticker
         for ticker, names in COMPANY_ALIASES.items()
-        if any(re.search(rf"\b{re.escape(n)}\b", q) for n in names)
+        # Optional possessive/plural: "Nvidia's", "Nvidias", "Apple’s" all name the company.
+        if any(re.search(rf"\b{re.escape(n)}(?:['’]?s)?\b", q) for n in names)
     ]
     if len(found) < 2 and _ALL_COMPANIES_RE.search(question):
         return list(COMPANY_ALIASES)
