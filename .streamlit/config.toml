@@ -10,3 +10,9 @@ font = "serif"
 
 [browser]
 gatherUsageStats = false
+
+[server]
+# The file watcher walks every imported module, including hundreds of lazy
+# transformers vision models whose torchvision import fails — flooding the logs
+# with tracebacks and slowing startup. Restart `make ui` to pick up code changes.
+fileWatcherType = "none"
