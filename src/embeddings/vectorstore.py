@@ -1,7 +1,7 @@
 """Vector store factory: switches between local Chroma and prod Pinecone.
 
 Embeddings are local (BAAI/bge-small-en-v1.5 via sentence-transformers) — no
-API key required. The same model runs in dev and on HF Spaces.
+API key required. The same model runs in dev and on Streamlit Cloud.
 
 get_embeddings() and get_vectorstore() are module-level singletons (lru_cache)
 so the 130MB model is loaded exactly once per process.

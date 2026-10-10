@@ -4,17 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-SEC Filing Intelligence Pipeline: a RAG system that lets analysts query 10-K/10-Q filings
-from SEC EDGAR in natural language and receive grounded, cited answers. Portfolio project
-for data/ML engineering job applications — every architectural decision should be
-explainable in an interview (see Design Decisions below). Deploys to HuggingFace Spaces.
+SEC Filing Intelligence Pipeline: a RAG system that lets analysts query SEC 10-K filings
+(latest 10-K for 8 companies — no 10-Qs; the parser only understands 10-K Items) in natural
+language and receive grounded, cited answers. Portfolio project for data/ML engineering job
+applications — every architectural decision should be explainable in an interview (see
+Design Decisions below). Deploys to Streamlit Community Cloud.
 
 ## Commands
 
 All workflows go through the Makefile (`make help` lists everything):
 
 ```bash
-make install          # pip install -r requirements.txt
+make install          # pip install -r requirements-dev.txt (runtime + ingestion/eval/dev)
 make dev-install      # install + pre-commit hooks
 make lint             # ruff check + mypy (src only for mypy)
 make format           # ruff format + ruff check --fix
@@ -50,7 +51,7 @@ src/
 │                            evaluate.py (RAGAS runner + pre-flight budget check)
 └── api/main.py            ← FastAPI: POST /query, DELETE /session/{id}, GET /companies,
                              GET /metrics, GET /quota, GET /health
-app/streamlit_app.py       ← Streamlit UI (HF Spaces entry point); theme in .streamlit/config.toml
+app/streamlit_app.py       ← Streamlit UI (Streamlit Cloud entry point); theme in .streamlit/config.toml
 scripts/                   ← build_index.py, index_pinecone.py, gen_ground_truth.py,
                              smoke_test_retrieval.py
 ```
@@ -59,7 +60,7 @@ scripts/                   ← build_index.py, index_pinecone.py, gen_ground_tru
 
 - **Embeddings are LOCAL** — sentence-transformers `BAAI/bge-small-en-v1.5`, no API key.
   Loaded as a singleton (~130 MB, once per process). `EMBEDDING_DEVICE=mps` on Apple
-  Silicon gives ~2–3× speedup. The same model runs in dev and on HF Spaces.
+  Silicon gives ~2–3× speedup. The same model runs in dev and on Streamlit Cloud.
   (An earlier design used OpenAI `text-embedding-3-small` — that is gone.)
 - **LLM:** Groq `qwen/qwen3.8-27b` generates; `openai/gpt-oss-120b` is the RAGAS judge
   and ground-truth author (`judge_model`) — a different family, so no self-grading.
@@ -131,11 +132,16 @@ EMBEDDING_DEVICE=cpu     # "mps" on Apple Silicon
 - `.github/workflows/ci.yml` — every push/PR to main runs `ruff check`,
   `ruff format --check` (unformatted code **fails CI** — run `make format` first),
   and unit tests with coverage.
-- `.github/workflows/hf_sync.yml` — every push to main **force-pushes the repo to the
-  HuggingFace Space** (`prasannawarad/sec-rag-intel`) if the `HF_TOKEN` repo secret is
-  set; skipped silently when it isn't. Pushing to main is deploying.
-- `README.md` starts with **HF Spaces YAML frontmatter** (`sdk: streamlit`,
-  `app_file: app/streamlit_app.py`) — do not remove or reorder it; Spaces parses it.
+- **Streamlit Community Cloud** deploys `app/streamlit_app.py` from `main` — **pushing to
+  main is deploying.** Secrets live in the Streamlit Cloud app settings (TOML; root-level
+  keys become env vars, which `Settings` reads). `VECTOR_STORE_MODE=pinecone` there only.
+- **`requirements.txt` is the app runtime only** — it's what Streamlit Cloud installs.
+  Keep it lean; anything not imported by `app/` → `src/chain|retrieval|embeddings` goes in
+  `requirements-dev.txt` (which `-r` includes it). Linux torch is pinned to the CPU wheel
+  (cp311) — the default Linux wheel drags in GBs of CUDA. Verify a change with a clean
+  `uv venv -p 3.11` + `uv pip install -r requirements.txt` + importing the app modules.
+- HuggingFace Spaces was dropped: free Spaces no longer offer the Streamlit SDK
+  (Docker is paid). There is no HF sync workflow.
 
 ## Coding conventions
 
@@ -152,7 +158,7 @@ EMBEDDING_DEVICE=cpu     # "mps" on Apple Silicon
 1. **Why MMR over plain similarity search?** Reduces redundancy — without it the top-5
    chunks often come from the same paragraph repeated across filing sections.
 2. **Why local BGE embeddings?** Zero API cost, no key management, and the identical
-   model runs in dev and on HF Spaces — no dev/prod embedding drift. Query and chunk
+   model runs in dev and on Streamlit Cloud — no dev/prod embedding drift. Query and chunk
    vectors must always come from the same model; re-index if the model changes.
 3. **Why ChromaDB locally, Pinecone in prod?** Chroma needs zero infra for development;
    Pinecone demonstrates cloud vector DBs. `VECTOR_STORE_MODE` switches without code changes.

@@ -25,7 +25,7 @@ import streamlit as st
 
 # `streamlit run` puts app/ (the script's own dir) on sys.path, not the repo
 # root — so add the root here, before the `src` imports, to resolve them both
-# locally (`make ui`) and on HuggingFace Spaces.
+# locally (`make ui`) and on Streamlit Community Cloud.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.chain.quota import get_quota_guard  # noqa: E402
