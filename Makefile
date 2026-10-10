@@ -1,7 +1,7 @@
 .PHONY: help install dev-install lint format test ingest index index-pinecone eval api ui clean
 
 help:
-	@echo "make install          — install runtime dependencies"
+	@echo "make install          — install runtime + dev dependencies"
 	@echo "make dev-install      — install + pre-commit hooks"
 	@echo "make lint             — ruff check + mypy"
 	@echo "make format           — ruff format + auto-fix"
@@ -17,7 +17,7 @@ help:
 	@echo "make clean            — remove caches and processed data"
 
 install:
-	pip install -r requirements.txt
+	pip install -r requirements-dev.txt
 
 dev-install: install
 	pre-commit install
