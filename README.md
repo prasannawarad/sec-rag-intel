@@ -5,7 +5,7 @@
 > project, built to run entirely on free tiers. See [Demo vs. production](#demo-vs-production)
 > for what would change at scale.
 
-[![Live demo](https://img.shields.io/badge/demo-Streamlit_Community_Cloud-ff4b4b)](#deployment)
+[![Live demo](https://img.shields.io/badge/live_demo-Streamlit-ff4b4b)](https://sec-rag-intel-cudc5wjblg3zjhltbbfv5p.streamlit.app)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
@@ -187,7 +187,8 @@ traffic:
 
 ## Deployment
 
-The demo runs on **Streamlit Community Cloud**, deployed from this repo's `main` branch.
+**Live demo: [https://sec-rag-intel-cudc5wjblg3zjhltbbfv5p.streamlit.app](https://sec-rag-intel-cudc5wjblg3zjhltbbfv5p.streamlit.app)** — on Streamlit Community Cloud, deployed from this repo's `main` branch.
+It may take a minute to wake up if nobody has used it recently.
 It uses **Pinecone** as the vector store, so the index doesn't live on the app's disk.
 
 ```bash
